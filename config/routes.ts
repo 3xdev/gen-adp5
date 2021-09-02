@@ -9,17 +9,19 @@ export default [
   },
   { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
-    path: '/admin',
-    name: '管理页',
+    path: '/system',
+    name: '系统管理',
     icon: 'crown',
     access: 'canAdmin',
-    component: './Admin',
     routes: [
-      { path: '/admin/sub-page', name: '二级管理页', icon: 'smile', component: './Welcome' },
-      { component: './404' },
+      {
+        path: '/system/admin',
+        name: '管理员管理',
+        icon: 'table',
+        component: './system/AdminTable',
+      },
     ],
   },
-  { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
   { path: '/', redirect: '/welcome' },
   { component: './404' },
 ];
