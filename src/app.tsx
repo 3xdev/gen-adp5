@@ -1,6 +1,8 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi';
+import { notification } from 'antd';
+import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
@@ -25,8 +27,7 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
-      return msg.data;
+      return await queryCurrentUser();
     } catch (error) {
       history.push(loginPath);
     }
@@ -47,13 +48,50 @@ export async function getInitialState(): Promise<{
   };
 }
 
+// 请求前拦截，自动填补JWT头
+const jwtHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
+  const token = localStorage.getItem('token') || '';
+  const jwtHeader = { Authorization: `Bearer ${token}` };
+  return {
+    url: `${url}`,
+    options: { ...options, interceptors: true, headers: jwtHeader },
+  };
+};
+// 响应后拦截，自动刷新JWT
+const tokenUpdateInterceptor = (response: Response) => {
+  const authorization = response.headers.get('authorization');
+  if (authorization) {
+    localStorage.setItem('token', authorization.slice(7));
+  }
+  return response;
+};
+export const request: RequestConfig = {
+  errorHandler: (error: ResponseError) => {
+    if (error.response) {
+      const { status, statusText } = error.response;
+      notification.error({
+        message: `${status}: ${statusText}`,
+        description: error.data?.message,
+      });
+    } else {
+      notification.error({
+        message: '网络异常',
+        description: '您的网络发生异常，无法连接服务器',
+      });
+    }
+    throw error;
+  },
+  requestInterceptors: [jwtHeaderInterceptor],
+  responseInterceptors: [tokenUpdateInterceptor],
+};
+
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
-      content: initialState?.currentUser?.name,
+      content: initialState?.currentUser?.username,
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
