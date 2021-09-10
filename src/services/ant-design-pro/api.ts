@@ -2,25 +2,25 @@
 /* eslint-disable */
 import { request } from 'umi';
 
-/** 获取当前的用户 GET /admin/profile */
+/** 获取当前的用户 GET /api/admin/profile */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.CurrentUser>('/api/profile', {
+  return request<API.CurrentUser>('/api/admin/profile', {
     method: 'GET',
     ...(options || {}),
   });
 }
 
-/** 解除登录接口 DELETE /admin/token */
+/** 解除登录接口 DELETE /api/admin/token */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/token', {
+  return request<Record<string, any>>('/api/admin/token', {
     method: 'DELETE',
     ...(options || {}),
   });
 }
 
-/** 登录接口 POST /admin/token */
+/** 登录接口 POST /api/admin/token */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/token', {
+  return request<API.LoginResult>('/api/admin/token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -30,15 +30,15 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
-/** 此处后端没有提供注释 GET /api/notices */
+/** 此处后端没有提供注释 GET /api/admin/notices */
 export async function getNotices(options?: { [key: string]: any }) {
-  return request<API.NoticeIconList>('/api/notices', {
+  return request<API.NoticeIconList>('/api/admin/notices', {
     method: 'GET',
     ...(options || {}),
   });
 }
 
-/** 获取规则列表 GET /api/rule */
+/** 获取规则列表 GET /api/admin/rule */
 export async function rule(
   params: {
     // query
@@ -49,7 +49,7 @@ export async function rule(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.RuleList>('/api/rule', {
+  return request<API.RuleList>('/api/admin/rule', {
     method: 'GET',
     params: {
       ...params,
@@ -58,25 +58,25 @@ export async function rule(
   });
 }
 
-/** 新建规则 PUT /api/rule */
+/** 新建规则 PUT /api/admin/rule */
 export async function updateRule(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/rule', {
+  return request<API.RuleListItem>('/api/admin/rule', {
     method: 'PUT',
     ...(options || {}),
   });
 }
 
-/** 新建规则 POST /api/rule */
+/** 新建规则 POST /api/admin/rule */
 export async function addRule(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/rule', {
+  return request<API.RuleListItem>('/api/admin/rule', {
     method: 'POST',
     ...(options || {}),
   });
 }
 
-/** 删除规则 DELETE /api/rule */
+/** 删除规则 DELETE /api/admin/rule */
 export async function removeRule(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/rule', {
+  return request<Record<string, any>>('/api/admin/rule', {
     method: 'DELETE',
     ...(options || {}),
   });

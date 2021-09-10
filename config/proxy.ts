@@ -11,7 +11,7 @@ export default {
     '/api/': {
       target: 'http://127.0.0.1:800',
       changeOrigin: true,
-      pathRewrite: { '^/api': '/admin' },
+      pathRewrite: { '^': '' },
     },
   },
   test: {
