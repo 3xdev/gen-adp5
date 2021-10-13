@@ -1,6 +1,7 @@
-import React from 'react';
-import { Form, Input, Modal, Select, Button } from 'antd';
-import type { TableItem } from '../data.d';
+import React, { useState } from 'react';
+import { Form, Input, Modal, Select, Button, Upload, notification } from 'antd';
+import type { TableItem, UploadItem } from '../data.d';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 export interface UpdateFormProps {
   onCancel: (flag?: boolean) => void;
@@ -19,7 +20,7 @@ const formLayout = {
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const formVals = props.values;
   const [form] = Form.useForm();
-
+  const [uploadVal, setUploadVal] = useState<UploadItem>({ loading: false, url: formVals.avatar });
   const { onSubmit: handleUpdate, onCancel: handleUpdateModalVisible, updateModalVisible } = props;
 
   const handleSubmit = async () => {
@@ -27,9 +28,50 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     handleUpdate({ ...formVals, ...fieldsValue });
   };
 
+  const handleUploadChange = (fileList: any) => {
+    if (fileList.file.status === 'uploading') {
+      setUploadVal({ loading: true });
+      return;
+    }
+    if (fileList.file.status === 'error') {
+      setUploadVal({ loading: false });
+      notification.error({
+        message: '上传失败',
+        description: fileList.file.response.message,
+      });
+      return;
+    }
+    if (fileList.file.status === 'done') {
+      setUploadVal({ loading: false, url: fileList.file.response.url });
+      formVals.avatar = fileList.file.response.url;
+    }
+  };
+
+  const token = localStorage.getItem('token') || '';
+  const jwtHeader = { Authorization: `Bearer ${token}` };
+
   const renderContent = () => {
+    const uploadButton = (
+      <div>
+        {uploadVal.loading ? <LoadingOutlined /> : <PlusOutlined />}
+        <div style={{ marginTop: 8 }}>上传</div>
+      </div>
+    );
+
     return (
       <>
+        <FormItem label="头像">
+          <Upload
+            listType="picture-card"
+            className="avatar-uploader"
+            showUploadList={false}
+            action="/api/admin/upload/image/avatar"
+            headers={jwtHeader}
+            onChange={handleUploadChange}
+          >
+            {uploadVal.url ? <img src={uploadVal.url} style={{ width: '100%' }} /> : uploadButton}
+          </Upload>
+        </FormItem>
         <FormItem name="username" label="帐号">
           <Input disabled />
         </FormItem>
