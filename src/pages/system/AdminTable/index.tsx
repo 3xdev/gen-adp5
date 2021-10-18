@@ -10,6 +10,7 @@ import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
 import { getList, updateItem, addItem, removeItem } from './service';
+import Avatar from 'antd/lib/avatar/avatar';
 
 /**
  * 添加
@@ -90,6 +91,12 @@ const AdminTable: React.FC = () => {
       title: '帐号',
       dataIndex: 'username',
       sorter: true,
+      render: (dom, record) => (
+        <>
+          <Avatar src={record.avatar} />
+          {dom}
+        </>
+      ),
     },
     {
       title: '密码',
@@ -138,6 +145,7 @@ const AdminTable: React.FC = () => {
           修改
         </a>,
         <a
+          key="remove"
           onClick={async () => {
             await handleRemove([record]);
             actionRef.current?.reloadAndRest?.();

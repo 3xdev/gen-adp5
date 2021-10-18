@@ -5,6 +5,11 @@ export interface TableItem {
   create_time: string;
 }
 
+export interface UploadItem {
+  loading?: boolean;
+  url?: string;
+}
+
 export interface TablePagination {
   total: number;
   pageSize: number;
