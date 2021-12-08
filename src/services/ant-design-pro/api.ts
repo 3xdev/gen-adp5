@@ -30,6 +30,27 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
+/** 全部字典 */
+export async function allDicts() {
+  return request('/api/admin/dicts?pageSize=99999', {
+    method: 'GET',
+  });
+}
+
+/** 获取字典 */
+export async function getDicts(name: string) {
+  return request(`/api/admin/dicts/${name}`, {
+    method: 'GET',
+  });
+}
+
+/** 获取schema */
+export async function getSchemas(name: string) {
+  return request(`/api/admin/schemas/${name}`, {
+    method: 'GET',
+  });
+}
+
 /** 此处后端没有提供注释 GET /api/admin/notices */
 export async function getNotices(options?: { [key: string]: any }) {
   return request<API.NoticeIconList>('/api/admin/notices', {
