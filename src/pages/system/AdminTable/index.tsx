@@ -121,6 +121,7 @@ const AdminTable: React.FC = () => {
       },
       search: false,
       filters: true,
+      hideInForm: true,
     },
     {
       title: '创建时间',

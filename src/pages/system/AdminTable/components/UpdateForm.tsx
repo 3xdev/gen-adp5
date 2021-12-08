@@ -73,7 +73,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           </Upload>
         </FormItem>
         <FormItem name="username" label="帐号">
-          <Input disabled />
+          <Input />
         </FormItem>
         <FormItem name="nickname" label="昵称">
           <Input />
