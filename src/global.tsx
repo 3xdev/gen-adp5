@@ -1,8 +1,21 @@
 import { Button, message, notification } from 'antd';
 import defaultSettings from '../config/defaultSettings';
-
 const { pwa } = defaultSettings;
-const isHttps = document.location.protocol === 'https:'; // if pwa is true
+const isHttps = document.location.protocol === 'https:';
+
+const clearCache = () => {
+  // remove all caches
+  if (window.caches) {
+    caches
+      .keys()
+      .then((keys) => {
+        keys.forEach((key) => {
+          caches.delete(key);
+        });
+      })
+      .catch((e) => console.log(e));
+  }
+}; // if pwa is true
 
 if (pwa) {
   // Notify user if offline now
@@ -39,8 +52,8 @@ if (pwa) {
           },
           [channel.port2],
         );
-      }); // Refresh current page to use the updated HTML and other assets after SW has skiped waiting
-
+      });
+      clearCache();
       window.location.reload();
       return true;
     };
@@ -79,13 +92,6 @@ if (pwa) {
 
   serviceWorker.getRegistration().then((sw) => {
     if (sw) sw.unregister();
-  }); // remove all caches
-
-  if (window.caches) {
-    caches.keys().then((keys) => {
-      keys.forEach((key) => {
-        caches.delete(key);
-      });
-    });
-  }
+  });
+  clearCache();
 }
