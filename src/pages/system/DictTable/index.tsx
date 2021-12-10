@@ -120,7 +120,7 @@ const DictTable: React.FC = () => {
     <PageContainer>
       <ProTable<TableItem>
         actionRef={actionRef}
-        rowKey="id"
+        rowKey="key_"
         search={{
           labelWidth: 120,
         }}
