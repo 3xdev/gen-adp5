@@ -6,11 +6,9 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
 import { getList, updateItem, addItem, removeItem } from './service';
-import Avatar from 'antd/lib/avatar/avatar';
 
 /**
  * 添加
@@ -57,7 +55,7 @@ const handleRemove = async (selectedRows: TableItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeItem(selectedRows.map((row) => row.id));
+    await removeItem(selectedRows.map((row) => row.key_));
     hide();
     message.success('删除成功，即将刷新');
     return true;
@@ -67,10 +65,8 @@ const handleRemove = async (selectedRows: TableItem[]) => {
   }
 };
 
-const AdminTable: React.FC = () => {
-  /** 新建窗口的弹窗 */
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
-  /** 分布更新窗口的弹窗 */
+const DictTable: React.FC = () => {
+  /** 更新窗口的弹窗 */
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -81,55 +77,17 @@ const AdminTable: React.FC = () => {
 
   const columns: ProColumns<TableItem>[] = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      search: false,
+      title: '代码',
+      dataIndex: 'key_',
       sorter: true,
-      hideInForm: true,
     },
     {
-      title: '帐号',
-      dataIndex: 'username',
-      sorter: true,
-      render: (dom, record) => (
-        <>
-          <Avatar src={record.avatar} />
-          {dom}
-        </>
-      ),
+      title: '名称',
+      dataIndex: 'label',
     },
     {
-      title: '密码',
-      dataIndex: 'password',
-      search: false,
-      hideInTable: true,
-    },
-    {
-      title: '手机号',
-      dataIndex: 'mobile',
-    },
-    {
-      title: '昵称',
-      dataIndex: 'nickname',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      valueEnum: {
-        0: { text: '禁用', status: 'Error' },
-        1: { text: '正常', status: 'Success' },
-      },
-      search: false,
-      filters: true,
-      hideInForm: true,
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'create_time',
-      search: false,
-      sorter: true,
-      valueType: 'dateTime',
-      hideInForm: true,
+      title: '说明',
+      dataIndex: 'intro',
     },
     {
       title: '操作',
@@ -171,7 +129,8 @@ const AdminTable: React.FC = () => {
             type="primary"
             key="primary"
             onClick={() => {
-              handleModalVisible(true);
+              handleUpdateModalVisible(true);
+              setCurrentRow(undefined);
             }}
           >
             <PlusOutlined /> 新建
@@ -204,43 +163,25 @@ const AdminTable: React.FC = () => {
           </Button>
         </FooterToolbar>
       )}
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ProTable<TableItem, TableItem>
-          onSubmit={async (value) => {
-            const success = await handleAdd(value);
-            if (success) {
-              handleModalVisible(false);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          rowKey="key"
-          type="form"
-          columns={columns}
-        />
-      </CreateForm>
 
-      {currentRow?.id && (
-        <UpdateForm
-          onSubmit={async (value) => {
-            const success = await handleUpdate(value);
-            if (success) {
-              handleUpdateModalVisible(false);
-              setCurrentRow(undefined);
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          onCancel={() => {
+      <UpdateForm
+        onSubmit={async (value) => {
+          const success = value.add ? await handleAdd(value) : await handleUpdate(value);
+          if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
-          }}
-          updateModalVisible={updateModalVisible}
-          values={currentRow || {}}
-        />
-      )}
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => {
+          handleUpdateModalVisible(false);
+          setCurrentRow(undefined);
+        }}
+        updateModalVisible={updateModalVisible}
+        values={currentRow || { add: true }}
+      />
 
       <Drawer
         width={600}
@@ -269,4 +210,4 @@ const AdminTable: React.FC = () => {
   );
 };
 
-export default AdminTable;
+export default DictTable;
