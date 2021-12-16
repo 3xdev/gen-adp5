@@ -1,5 +1,5 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Drawer } from 'antd';
+import { ExportOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, message, Drawer, Avatar } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -10,7 +10,7 @@ import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
 import { getList, updateItem, addItem, removeItem } from './service';
-import Avatar from 'antd/lib/avatar/avatar';
+import ExportExcel from '@/components/ExportExcel';
 
 /**
  * 添加
@@ -51,13 +51,13 @@ const handleUpdate = async (fields: Partial<TableItem>) => {
 /**
  * 删除
  *
- * @param selectedRows
+ * @param rows
  */
-const handleRemove = async (selectedRows: TableItem[]) => {
+const handleRemove = async (rows: TableItem[]) => {
   const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
+  if (!rows) return true;
   try {
-    await removeItem(selectedRows.map((row) => row.id));
+    await removeItem(rows.map((row) => row.id));
     hide();
     message.success('删除成功，即将刷新');
     return true;
@@ -77,7 +77,16 @@ const AdminTable: React.FC = () => {
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
-  const [selectedRowsState, setSelectedRows] = useState<TableItem[]>([]);
+  const [selectedRows, setSelectedRows] = useState<TableItem[]>([]);
+  const [allRows, setAllRows] = useState<TableItem[]>([]);
+
+  const handleList = async (params: any, sorter: any, filter: any) => {
+    const result = getList({ ...params, sorter, filter });
+    result.then((res) => {
+      setAllRows(res.data);
+    });
+    return result;
+  };
 
   const columns: ProColumns<TableItem>[] = [
     {
@@ -169,33 +178,42 @@ const AdminTable: React.FC = () => {
         toolBarRender={() => [
           <Button
             type="primary"
-            key="primary"
+            key="add"
             onClick={() => {
               handleModalVisible(true);
             }}
           >
             <PlusOutlined /> 新建
           </Button>,
+          <Button
+            type="primary"
+            key="export"
+            onClick={() => {
+              ExportExcel(columns, allRows, 'cc.xlsx');
+            }}
+          >
+            <ExportOutlined /> 导出
+          </Button>,
         ]}
-        request={(params, sorter, filter) => getList({ ...params, sorter, filter })}
+        request={(params, sorter, filter) => handleList(params, sorter, filter)}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
+          onChange: (_, rows) => {
+            setSelectedRows(rows);
           },
         }}
       />
-      {selectedRowsState?.length > 0 && (
+      {selectedRows?.length > 0 && (
         <FooterToolbar
           extra={
             <div>
-              已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+              已选择 <a style={{ fontWeight: 600 }}>{selectedRows.length}</a> 项
             </div>
           }
         >
           <Button
             onClick={async () => {
-              await handleRemove(selectedRowsState);
+              await handleRemove(selectedRows);
               setSelectedRows([]);
               actionRef.current?.reloadAndRest?.();
             }}

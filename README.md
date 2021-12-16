@@ -3,6 +3,7 @@
 ### 组件选型
 
 - @ant-design/charts 图表
+- @formily/core Formily 表单解决方案
 - braft-editor 富文本
 - xlsx Excel 处理
 
