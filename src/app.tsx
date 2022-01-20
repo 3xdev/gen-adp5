@@ -6,7 +6,7 @@ import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { currentUser as queryCurrentUser, fetchMenuData } from './services/ant-design-pro/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -88,6 +88,14 @@ export const request: RequestConfig = {
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
+    menu: {
+      params: {
+        id: initialState?.currentUser?.id,
+      },
+      request: async (params) => {
+        return params.id ? await fetchMenuData() : [];
+      },
+    },
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {

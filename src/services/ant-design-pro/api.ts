@@ -30,6 +30,13 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
+/** 获取菜单 POST /api/admin/schemas/menu */
+export async function fetchMenuData() {
+  return request('/api/admin/schemas/menu', {
+    method: 'GET',
+  });
+}
+
 /** 全部字典 */
 export async function allDicts() {
   return request('/api/admin/dicts?pageSize=99999', {
