@@ -57,6 +57,7 @@
     "@formily/core": "^2.0.5",
     "@formily/react": "^2.0.5",
     "@umijs/route-utils": "^2.0.3",
+    "ahooks": "^3.1.9",
     "antd": "^4.16.13",
     "braft-editor": "^2.3.9",
     "classnames": "^2.2.6",
