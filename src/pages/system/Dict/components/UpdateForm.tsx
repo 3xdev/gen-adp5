@@ -130,7 +130,11 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             name="items"
             x-decorator="FormItem"
             x-component="ArrayTable"
-            x-component-props={{ pagination: false }}
+            x-component-props={{
+              pagination: {
+                pageSize: 999,
+              },
+            }}
           >
             <SchemaField.Object>
               <SchemaField.Void

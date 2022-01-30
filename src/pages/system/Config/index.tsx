@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
 import { Button, message, Drawer } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
@@ -10,6 +10,7 @@ import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
 import { getList, updateItem, addItem, removeItem } from './service';
 import { getDicts } from '@/services/ant-design-pro/api';
+import ExportExcel from '@/components/ExportExcel';
 
 /**
  * 添加
@@ -77,7 +78,16 @@ const ConfigTable: React.FC = () => {
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
-  const [selectedRowsState, setSelectedRows] = useState<TableItem[]>([]);
+  const [selectedRows, setSelectedRows] = useState<TableItem[]>([]);
+  const [responseRows, setResponseRows] = useState<TableItem[]>([]);
+
+  const handleList = async (params: any, sorter: any, filter: any) => {
+    const result = getList({ ...params, sorter, filter });
+    result.then((res) => {
+      setResponseRows(res.data);
+    });
+    return result;
+  };
 
   useEffect(() => {
     getDicts('config_tab').then((res) => {
@@ -176,7 +186,7 @@ const ConfigTable: React.FC = () => {
         toolBarRender={() => [
           <Button
             type="primary"
-            key="primary"
+            key="create"
             onClick={() => {
               handleUpdateModalVisible(true);
               setCurrentRow(undefined);
@@ -184,26 +194,35 @@ const ConfigTable: React.FC = () => {
           >
             <PlusOutlined /> 新建
           </Button>,
+          <Button
+            type="primary"
+            key="export"
+            onClick={() => {
+              ExportExcel(columns, responseRows);
+            }}
+          >
+            <ExportOutlined /> 导出
+          </Button>,
         ]}
-        request={(params, sorter, filter) => getList({ ...params, sorter, filter })}
+        request={(params, sorter, filter) => handleList(params, sorter, filter)}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
+          onChange: (_, rows) => {
+            setSelectedRows(rows);
           },
         }}
       />
-      {selectedRowsState?.length > 0 && (
+      {selectedRows?.length > 0 && (
         <FooterToolbar
           extra={
             <div>
-              已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+              已选择 <a style={{ fontWeight: 600 }}>{selectedRows.length}</a> 项
             </div>
           }
         >
           <Button
             onClick={async () => {
-              await handleRemove(selectedRowsState);
+              await handleRemove(selectedRows);
               setSelectedRows([]);
               actionRef.current?.reloadAndRest?.();
             }}

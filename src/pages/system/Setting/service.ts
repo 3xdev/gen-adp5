@@ -1,7 +1,7 @@
 import { request } from 'umi';
 
 export async function getConfigs() {
-  return request('/api/admin/configs?pageSize=99999', {
+  return request('/api/admin/config?pageSize=99999', {
     method: 'GET',
   });
 }

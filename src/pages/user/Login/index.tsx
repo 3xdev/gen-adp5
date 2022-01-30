@@ -208,4 +208,5 @@ const Login: React.FC = () => {
   );
 };
 
+Login.layout = false;
 export default Login;

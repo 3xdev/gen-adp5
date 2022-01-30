@@ -30,30 +30,30 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
-/** 获取菜单 POST /api/admin/schemas/menu */
-export async function fetchMenuData() {
-  return request('/api/admin/schemas/menu', {
-    method: 'GET',
-  });
-}
-
 /** 全部字典 */
 export async function allDicts() {
-  return request('/api/admin/dicts?pageSize=99999', {
+  return request('/api/admin/dict?pageSize=99999', {
     method: 'GET',
   });
 }
 
 /** 获取字典 */
 export async function getDicts(name: string) {
-  return request(`/api/admin/dicts/${name}`, {
+  return request(`/api/admin/dict/${name}`, {
+    method: 'GET',
+  });
+}
+
+/** 获取菜单 */
+export async function getMenus() {
+  return request('/api/admin/menu?status=1', {
     method: 'GET',
   });
 }
 
 /** 获取schema */
 export async function getSchemas(name: string) {
-  return request(`/api/admin/schemas/${name}`, {
+  return request(`/api/admin/schema/${name}`, {
     method: 'GET',
   });
 }
