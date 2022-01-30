@@ -5,7 +5,7 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
-import { currentUser as queryCurrentUser, fetchMenuData } from './services/ant-design-pro/api';
+import { currentUser as queryCurrentUser, getMenus } from './services/ant-design-pro/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -92,7 +92,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         id: initialState?.currentUser?.id,
       },
       request: async (params) => {
-        return params.id ? await fetchMenuData() : [];
+        return params.id ? (await getMenus()).data : [];
       },
     },
     rightContentRender: () => <RightContent />,
