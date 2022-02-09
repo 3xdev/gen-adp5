@@ -118,8 +118,18 @@ const ColForm: React.FC = () => {
           getDicts('col_value_type').then((res) => {
             form.setFieldState('cols.*.value_type', { dataSource: res.items });
           });
+          getDicts('table_columns_option_type').then((res) => {
+            form.setFieldState('options.columns.*.type', { dataSource: res.items });
+          });
+          getDicts('table_toolbar_option_type').then((res) => {
+            form.setFieldState('options.toolbar.*.type', { dataSource: res.items });
+          });
+          getDicts('table_batch_option_type').then((res) => {
+            form.setFieldState('options.batch.*.type', { dataSource: res.items });
+          });
           allDicts().then((res) => {
             const items: any = [];
+            items.push({ value: '', label: '无' });
             res.data.forEach((item: any) => {
               items.push({ value: item.key_, label: item.label });
             });
@@ -167,6 +177,7 @@ const ColForm: React.FC = () => {
               x-decorator="FormItem"
               x-component="ArrayTable"
               x-component-props={{
+                title: () => '列',
                 pagination: {
                   pageSize: 999,
                 },
@@ -291,7 +302,7 @@ const ColForm: React.FC = () => {
                     x-component="Select"
                     x-component-props={{
                       style: {
-                        width: 80,
+                        width: 100,
                       },
                     }}
                   />
@@ -306,7 +317,7 @@ const ColForm: React.FC = () => {
                     x-component="Select"
                     x-component-props={{
                       style: {
-                        width: 80,
+                        width: 100,
                       },
                     }}
                   />
@@ -355,6 +366,192 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
               </SchemaField.Object>
               <SchemaField.Void x-component="ArrayTable.Addition" title="添加列" />
+            </SchemaField.Array>
+            <SchemaField.Array
+              name="options.columns"
+              x-decorator="FormItem"
+              x-component="ArrayTable"
+              x-component-props={{
+                title: () => '列操作',
+                pagination: {
+                  pageSize: 999,
+                },
+              }}
+            >
+              <SchemaField.Object>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '排序' }}
+                >
+                  <SchemaField.Void x-decorator="FormItem" x-component="ArrayTable.SortHandle" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '序号' }}
+                >
+                  <SchemaField.String
+                    name="sort"
+                    x-decorator="FormItem"
+                    x-component="ArrayTable.Index"
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '标题' }}
+                >
+                  <SchemaField.String
+                    name="title"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    required
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '类型' }}
+                >
+                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '需要确认' }}
+                >
+                  <SchemaField.Boolean name="confirm" x-decorator="FormItem" x-component="Switch" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '操作', dataIndex: 'operations' }}
+                >
+                  <SchemaField.Void x-component="FormItem">
+                    <SchemaField.Void x-component="ArrayTable.Remove" />
+                    <SchemaField.Void x-component="ArrayTable.MoveDown" />
+                    <SchemaField.Void x-component="ArrayTable.MoveUp" />
+                  </SchemaField.Void>
+                </SchemaField.Void>
+              </SchemaField.Object>
+              <SchemaField.Void x-component="ArrayTable.Addition" title="添加列操作" />
+            </SchemaField.Array>
+            <SchemaField.Array
+              name="options.toolbar"
+              x-decorator="FormItem"
+              x-component="ArrayTable"
+              x-component-props={{
+                title: () => '列操作',
+                pagination: {
+                  pageSize: 999,
+                },
+              }}
+            >
+              <SchemaField.Object>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '排序' }}
+                >
+                  <SchemaField.Void x-decorator="FormItem" x-component="ArrayTable.SortHandle" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '序号' }}
+                >
+                  <SchemaField.String
+                    name="sort"
+                    x-decorator="FormItem"
+                    x-component="ArrayTable.Index"
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '标题' }}
+                >
+                  <SchemaField.String
+                    name="title"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    required
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '类型' }}
+                >
+                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '路径' }}
+                >
+                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '操作', dataIndex: 'operations' }}
+                >
+                  <SchemaField.Void x-component="FormItem">
+                    <SchemaField.Void x-component="ArrayTable.Remove" />
+                    <SchemaField.Void x-component="ArrayTable.MoveDown" />
+                    <SchemaField.Void x-component="ArrayTable.MoveUp" />
+                  </SchemaField.Void>
+                </SchemaField.Void>
+              </SchemaField.Object>
+              <SchemaField.Void x-component="ArrayTable.Addition" title="添加工具栏操作" />
+            </SchemaField.Array>
+            <SchemaField.Array
+              name="options.batch"
+              x-decorator="FormItem"
+              x-component="ArrayTable"
+              x-component-props={{
+                title: () => '批量操作',
+                pagination: {
+                  pageSize: 999,
+                },
+              }}
+            >
+              <SchemaField.Object>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '排序' }}
+                >
+                  <SchemaField.Void x-decorator="FormItem" x-component="ArrayTable.SortHandle" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '序号' }}
+                >
+                  <SchemaField.String
+                    name="sort"
+                    x-decorator="FormItem"
+                    x-component="ArrayTable.Index"
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '标题' }}
+                >
+                  <SchemaField.String
+                    name="title"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    required
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '类型' }}
+                >
+                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '操作', dataIndex: 'operations' }}
+                >
+                  <SchemaField.Void x-component="FormItem">
+                    <SchemaField.Void x-component="ArrayTable.Remove" />
+                    <SchemaField.Void x-component="ArrayTable.MoveDown" />
+                    <SchemaField.Void x-component="ArrayTable.MoveUp" />
+                  </SchemaField.Void>
+                </SchemaField.Void>
+              </SchemaField.Object>
+              <SchemaField.Void x-component="ArrayTable.Addition" title="添加批量操作" />
             </SchemaField.Array>
           </SchemaField>
           <FormButtonGroup.FormItem>
