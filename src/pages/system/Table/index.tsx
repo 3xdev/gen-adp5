@@ -7,7 +7,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
-import { getList, updateItem, addItem, removeItem } from './service';
+import { getList, addItem, removeItem } from './service';
 
 /**
  * 添加
@@ -20,24 +20,6 @@ const handleAdd = async (fields: TableItem) => {
     await addItem({ ...fields });
     hide();
     message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    return false;
-  }
-};
-
-/**
- * 更新
- *
- * @param fields
- */
-const handleUpdate = async (fields: Partial<TableItem>) => {
-  const hide = message.loading('正在更新');
-  try {
-    await updateItem({ ...fields });
-    hide();
-    message.success('更新成功');
     return true;
   } catch (error) {
     hide();
@@ -84,8 +66,9 @@ const DictTable: React.FC = () => {
     {
       title: '属性',
       dataIndex: 'props',
-      valueType: 'jsonCode',
       search: false,
+      ellipsis: true,
+      render: (dom, record) => <>{JSON.stringify(record.props)}</>,
     },
     {
       title: '状态',
@@ -160,7 +143,7 @@ const DictTable: React.FC = () => {
 
       <UpdateForm
         onSubmit={async (value) => {
-          const success = value.code ? await handleUpdate(value) : await handleAdd(value);
+          const success = await handleAdd(value);
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);

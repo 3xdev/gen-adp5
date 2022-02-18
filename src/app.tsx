@@ -1,4 +1,4 @@
-import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
+import type { MenuDataItem, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import { notification } from 'antd';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
@@ -6,10 +6,34 @@ import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
 import { currentUser as queryCurrentUser, getMenus } from './services/ant-design-pro/api';
-import { BookOutlined, LinkOutlined } from '@ant-design/icons';
+import {
+  BookOutlined,
+  CrownOutlined,
+  HeartOutlined,
+  LinkOutlined,
+  SettingOutlined,
+  SmileOutlined,
+  TableOutlined,
+} from '@ant-design/icons';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
+
+const iconMap = {
+  book: <BookOutlined />,
+  crown: <CrownOutlined />,
+  heart: <HeartOutlined />,
+  link: <LinkOutlined />,
+  setting: <SettingOutlined />,
+  smile: <SmileOutlined />,
+  table: <TableOutlined />,
+};
+
+const mapMenuItems = (menus: MenuDataItem[]): MenuDataItem[] =>
+  menus.map(({ icon, ...item }) => ({
+    ...item,
+    icon: icon && iconMap[icon as string],
+  }));
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -92,7 +116,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         id: initialState?.currentUser?.id,
       },
       request: async (params) => {
-        return params.id ? (await getMenus()).data : [];
+        return params.id ? mapMenuItems((await getMenus()).data) : [];
       },
     },
     rightContentRender: () => <RightContent />,
@@ -109,11 +133,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     },
     links: isDev
       ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
+          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
             <LinkOutlined />
             <span>OpenAPI 文档</span>
           </Link>,
-          <Link to="/~docs">
+          <Link key="docs" to="/~docs">
             <BookOutlined />
             <span>业务组件文档</span>
           </Link>,

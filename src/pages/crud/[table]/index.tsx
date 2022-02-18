@@ -10,14 +10,8 @@ import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import UpdateForm from './components/UpdateForm';
 import type { RouteParams, TableSchema, TableItem } from './data.d';
-import {
-  getList,
-  getProTableSchema,
-  getFormilySchema,
-  updateItem,
-  addItem,
-  removeItem,
-} from './service';
+import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
+import { getList, updateItem, addItem, removeItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
 
 /**

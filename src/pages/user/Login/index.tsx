@@ -21,7 +21,7 @@ const LoginMessage: React.FC<{
   />
 );
 
-const Login: React.FC = () => {
+const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [type, setType] = useState<string>('password');
   const [errorMsg, setErrorMsg] = useState<string>('');

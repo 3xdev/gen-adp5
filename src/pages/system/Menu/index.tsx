@@ -98,6 +98,10 @@ const MenuTable: React.FC = () => {
       dataIndex: 'icon',
     },
     {
+      title: '排序',
+      dataIndex: 'sort',
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       valueEnum: {

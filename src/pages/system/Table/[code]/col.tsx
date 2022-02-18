@@ -103,6 +103,7 @@ const ColForm: React.FC = () => {
 
   useEffect(() => {
     getItem(routeParams.code).then((res) => {
+      res.props_string = JSON.stringify(res.props);
       setValues(res);
     });
   }, [routeParams.code]);
@@ -166,7 +167,7 @@ const ColForm: React.FC = () => {
               x-component="Select"
             />
             <SchemaField.String
-              name="props"
+              name="props_string"
               title="属性"
               x-decorator="FormItem"
               x-component="Input.TextArea"
@@ -259,7 +260,7 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表格不显' }}
+                  x-component-props={{ title: '列表不显' }}
                 >
                   <SchemaField.Boolean
                     name="hide_in_table"
@@ -269,10 +270,20 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表单不显' }}
+                  x-component-props={{ title: '编辑不显' }}
                 >
                   <SchemaField.Boolean
                     name="hide_in_form"
+                    x-decorator="FormItem"
+                    x-component="Switch"
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '查看不显' }}
+                >
+                  <SchemaField.Boolean
+                    name="hide_in_descriptions"
                     x-decorator="FormItem"
                     x-component="Switch"
                   />
@@ -397,6 +408,23 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
+                  x-component-props={{ title: '类型' }}
+                >
+                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '操作名' }}
+                >
+                  <SchemaField.String
+                    name="key"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    required
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
                   x-component-props={{ title: '标题' }}
                 >
                   <SchemaField.String
@@ -405,12 +433,6 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     required
                   />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
-                  x-component-props={{ title: '类型' }}
-                >
-                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -461,6 +483,23 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
+                  x-component-props={{ title: '类型' }}
+                >
+                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '操作名' }}
+                >
+                  <SchemaField.String
+                    name="key"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    required
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
                   x-component-props={{ title: '标题' }}
                 >
                   <SchemaField.String
@@ -469,12 +508,6 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     required
                   />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
-                  x-component-props={{ title: '类型' }}
-                >
-                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -525,6 +558,23 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
+                  x-component-props={{ title: '类型' }}
+                >
+                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '操作名' }}
+                >
+                  <SchemaField.String
+                    name="key"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    required
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
                   x-component-props={{ title: '标题' }}
                 >
                   <SchemaField.String
@@ -533,12 +583,6 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     required
                   />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
-                  x-component-props={{ title: '类型' }}
-                >
-                  <SchemaField.Markup name="type" x-decorator="FormItem" x-component="Select" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"

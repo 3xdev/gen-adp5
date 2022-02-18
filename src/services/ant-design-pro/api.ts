@@ -52,10 +52,11 @@ export async function getMenus() {
 }
 
 /** 获取schema */
-export async function getSchemas(name: string) {
-  return request(`/api/admin/schema/${name}`, {
-    method: 'GET',
-  });
+export async function getProTableSchema(table: string) {
+  return request(`/api/admin/schema/protable/${table}`);
+}
+export async function getFormilySchema(table: string) {
+  return request(`/api/admin/schema/formily/${table}`);
 }
 
 /** 此处后端没有提供注释 GET /api/admin/notices */

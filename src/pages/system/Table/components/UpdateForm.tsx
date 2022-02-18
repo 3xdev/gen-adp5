@@ -98,7 +98,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   return (
     <Modal
       destroyOnClose
-      title={values.code ? '编辑' : '添加'}
+      title="添加"
       width={640}
       visible={updateModalVisible}
       onCancel={() => onCancel()}
@@ -121,7 +121,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             required
           />
           <SchemaField.String
-            name="props"
+            name="props_string"
             title="属性"
             x-decorator="FormItem"
             x-component="Input.TextArea"
