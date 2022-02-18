@@ -106,7 +106,6 @@ const Setting: React.FC = () => {
       cres.data.forEach((item: any) => {
         items[item.code] = item.value;
       });
-      console.log(items);
       setValues(items);
     });
   }, []);

@@ -121,7 +121,7 @@ const ConfigTable: React.FC = () => {
 
     return option.confirm ? (
       <Popconfirm
-        key={option.type}
+        key={option.key}
         title={`是否确认${option.title}吗?`}
         okText="是"
         cancelText="否"
@@ -130,42 +130,35 @@ const ConfigTable: React.FC = () => {
         <a>{option.title}</a>
       </Popconfirm>
     ) : (
-      <a key={option.type} onClick={_handle}>
+      <a key={option.key} onClick={_handle}>
         {option.title}
       </a>
     );
   };
 
   const renderToolbarOptions = (columns: any, option: any) => {
+    let _handle = () => {};
+    let _icon = <></>;
     switch (option.type) {
       case 'add':
-        return (
-          <Button
-            type="primary"
-            key="create"
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setCurrentRow(undefined);
-            }}
-          >
-            <PlusOutlined /> 新建
-          </Button>
-        );
+        _handle = () => {
+          handleUpdateModalVisible(true);
+          setCurrentRow(undefined);
+        };
+        _icon = <PlusOutlined />;
+        break;
       case 'export':
-        return (
-          <Button
-            type="primary"
-            key="export"
-            onClick={() => {
-              ExportExcel(columns, responseRows);
-            }}
-          >
-            <ExportOutlined /> 导出
-          </Button>
-        );
-      default:
-        return <></>;
+        _handle = () => {
+          ExportExcel(columns, responseRows);
+        };
+        _icon = <ExportOutlined />;
+        break;
     }
+    return (
+      <Button type="primary" key={option.key} onClick={_handle}>
+        {_icon} {option.title}
+      </Button>
+    );
   };
 
   const renderBatchOptions = (table: string, option: any) => {
@@ -179,8 +172,11 @@ const ConfigTable: React.FC = () => {
         };
         break;
     }
-
-    return <Button onClick={_handle}>{option.title}</Button>;
+    return (
+      <Button key={option.key} onClick={_handle}>
+        {option.title}
+      </Button>
+    );
   };
 
   const rowSelection = {
@@ -275,7 +271,6 @@ const ConfigTable: React.FC = () => {
         {currentRow?.id && (
           <ProTable<TableItem, TableItem>
             onSubmit={async (value) => {
-              console.log(value);
               const success = await handleAdd(routeParams.table, value);
               if (success) {
                 setCurrentRow(undefined);
