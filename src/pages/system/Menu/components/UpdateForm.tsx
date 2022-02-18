@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Modal } from 'antd';
-import { createForm } from '@formily/core';
+import { createForm, onFieldReact } from '@formily/core';
 import { createSchemaField } from '@formily/react';
 import {
   Form,
@@ -105,6 +105,16 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           getDicts('common_status').then((res) => {
             form.setFieldState('status', { dataSource: res.items });
           });
+
+          onFieldReact('parent_id', (field) => {
+            field.disabled = values.id ? true : false;
+          });
+          onFieldReact('path', (field) => {
+            field.setState({ required: field.query('parent_id').value() === 0 ? false : true });
+          });
+          onFieldReact('icon', (field) => {
+            field.display = field.query('parent_id').value() === 0 ? 'visible' : 'none';
+          });
         },
       }),
     [values],
@@ -121,15 +131,13 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     >
       <Form form={form} labelCol={6} wrapperCol={16}>
         <SchemaField>
-          {values.id || (
-            <SchemaField.Markup
-              name="parent_id"
-              title="上级"
-              x-decorator="FormItem"
-              x-component="Select"
-              required
-            />
-          )}
+          <SchemaField.Markup
+            name="parent_id"
+            title="上级"
+            x-decorator="FormItem"
+            x-component="Select"
+            required
+          />
           <SchemaField.String
             name="name"
             title="名称"
@@ -142,9 +150,14 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             title="访问路由"
             x-decorator="FormItem"
             x-component="Input"
-            required
           />
-          <SchemaField.String name="icon" title="图标" x-decorator="FormItem" x-component="Input" />
+          <SchemaField.String
+            name="icon"
+            title="图标"
+            x-decorator="FormItem"
+            x-component="Select"
+            enum={['', 'book', 'crown', 'heart', 'link', 'setting', 'smile', 'table']}
+          />
           <SchemaField.Number
             name="sort"
             title="排序"

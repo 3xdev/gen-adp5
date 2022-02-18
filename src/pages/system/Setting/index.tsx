@@ -33,7 +33,7 @@ import {
 } from '@formily/antd';
 import { Card, Slider, Rate, message } from 'antd';
 import { getConfigs, updateSetting } from './service';
-import { getSchemas } from '@/services/ant-design-pro/api';
+import { getFormilySchema } from '@/services/ant-design-pro/api';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 
@@ -106,7 +106,6 @@ const Setting: React.FC = () => {
       cres.data.forEach((item: any) => {
         items[item.code] = item.value;
       });
-      console.log(items);
       setValues(items);
     });
   }, []);
@@ -117,8 +116,7 @@ const Setting: React.FC = () => {
         initialValues: values,
         effects() {
           onFormInit(() => {
-            getSchemas('setting').then((res) => {
-              console.log(res);
+            getFormilySchema('setting').then((res) => {
               setSchema(res);
             });
           });

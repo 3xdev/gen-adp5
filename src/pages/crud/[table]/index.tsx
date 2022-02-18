@@ -1,5 +1,5 @@
 import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
-import { Button, message, Drawer } from 'antd';
+import { Button, message, Drawer, Modal, Popconfirm } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { useUpdateEffect } from 'ahooks';
 import { useParams } from 'umi';
@@ -10,7 +10,8 @@ import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import UpdateForm from './components/UpdateForm';
 import type { RouteParams, TableSchema, TableItem } from './data.d';
-import { getList, getProTableSchema, updateItem, addItem, removeItem } from './service';
+import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
+import { getList, updateItem, addItem, removeItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
 
 /**
@@ -18,10 +19,10 @@ import ExportExcel from '@/components/ExportExcel';
  *
  * @param fields
  */
-const handleAdd = async (fields: TableItem) => {
+const handleAdd = async (table: string, fields: TableItem) => {
   const hide = message.loading('正在添加');
   try {
-    await addItem({ ...fields });
+    await addItem(table, { ...fields });
     hide();
     message.success('添加成功');
     return true;
@@ -36,10 +37,10 @@ const handleAdd = async (fields: TableItem) => {
  *
  * @param fields
  */
-const handleUpdate = async (fields: Partial<TableItem>) => {
+const handleUpdate = async (table: string, fields: Partial<TableItem>) => {
   const hide = message.loading('正在更新');
   try {
-    await updateItem({ ...fields });
+    await updateItem(table, { ...fields });
     hide();
     message.success('更新成功');
     return true;
@@ -54,11 +55,14 @@ const handleUpdate = async (fields: Partial<TableItem>) => {
  *
  * @param selectedRows
  */
-const handleRemove = async (selectedRows: TableItem[]) => {
+const handleRemove = async (table: string, selectedRows: TableItem[]) => {
   const hide = message.loading('正在删除');
   if (!selectedRows) return true;
   try {
-    await removeItem(selectedRows.map((row) => row.id));
+    await removeItem(
+      table,
+      selectedRows.map((row) => row.id),
+    );
     hide();
     message.success('删除成功，即将刷新');
     return true;
@@ -73,9 +77,11 @@ const ConfigTable: React.FC = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const routeParams: RouteParams = useParams();
 
-  const [schema, setSchema] = useState<TableSchema>({ rowKey: 'id', columns: [] });
+  const [schema, setSchema] = useState<TableSchema>({ rowKey: 'id', options: [], columns: [] });
+  const [formilyJson, setFormilyJson] = useState({});
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [showForm, setShowForm] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
@@ -90,9 +96,119 @@ const ConfigTable: React.FC = () => {
     return result;
   };
 
+  const renderColumnsOptions = (table: string, option: any, record: any) => {
+    let _handle = () => {};
+    switch (option.type) {
+      case 'view':
+        _handle = () => {
+          setCurrentRow(record);
+          setShowDetail(true);
+        };
+        break;
+      case 'edit':
+        _handle = () => {
+          setCurrentRow(record);
+          handleUpdateModalVisible(true);
+        };
+        break;
+      case 'delete':
+        _handle = async () => {
+          await handleRemove(table, [record]);
+          actionRef.current?.reloadAndRest?.();
+        };
+        break;
+    }
+
+    return option.confirm ? (
+      <Popconfirm
+        key={option.key}
+        title={`是否确认${option.title}吗?`}
+        okText="是"
+        cancelText="否"
+        onConfirm={_handle}
+      >
+        <a>{option.title}</a>
+      </Popconfirm>
+    ) : (
+      <a key={option.key} onClick={_handle}>
+        {option.title}
+      </a>
+    );
+  };
+
+  const renderToolbarOptions = (columns: any, option: any) => {
+    let _handle = () => {};
+    let _icon = <></>;
+    switch (option.type) {
+      case 'add':
+        _handle = () => {
+          handleUpdateModalVisible(true);
+          setCurrentRow(undefined);
+        };
+        _icon = <PlusOutlined />;
+        break;
+      case 'export':
+        _handle = () => {
+          ExportExcel(columns, responseRows);
+        };
+        _icon = <ExportOutlined />;
+        break;
+    }
+    return (
+      <Button type="primary" key={option.key} onClick={_handle}>
+        {_icon} {option.title}
+      </Button>
+    );
+  };
+
+  const renderBatchOptions = (table: string, option: any) => {
+    let _handle = () => {};
+    switch (option.type) {
+      case 'bdelete':
+        _handle = async () => {
+          await handleRemove(table, selectedRows);
+          setSelectedRows([]);
+          actionRef.current?.reload();
+        };
+        break;
+    }
+    return (
+      <Button key={option.key} onClick={_handle}>
+        {option.title}
+      </Button>
+    );
+  };
+
+  const rowSelection = {
+    onChange: (_: any, rows: any) => {
+      setSelectedRows(rows);
+    },
+  };
+
   useEffect(() => {
     getProTableSchema(routeParams.table).then((res) => {
+      if (res.options.columns?.length > 0) {
+        res.columns.push({
+          title: '操作',
+          dataIndex: 'option',
+          valueType: 'option',
+          render: (_: any, record: any) =>
+            res.options.columns.map((option: any) =>
+              renderColumnsOptions(routeParams.table, option, record),
+            ),
+        });
+      }
+      if (res.options.toolbar?.length > 0) {
+        res.toolBarRender = () =>
+          res.options.toolbar.map((option: any) => renderToolbarOptions(res.columns, option));
+      }
+      if (res.options.batch?.length > 0) {
+        res.rowSelection = rowSelection;
+      }
       setSchema(res);
+    });
+    getFormilySchema(routeParams.table).then((res) => {
+      setFormilyJson(res);
     });
   }, [routeParams.table]);
 
@@ -107,33 +223,7 @@ const ConfigTable: React.FC = () => {
         search={{
           labelWidth: 120,
         }}
-        toolBarRender={() => [
-          <Button
-            type="primary"
-            key="create"
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setCurrentRow(undefined);
-            }}
-          >
-            <PlusOutlined /> 新建
-          </Button>,
-          <Button
-            type="primary"
-            key="export"
-            onClick={() => {
-              ExportExcel(schema.columns, responseRows);
-            }}
-          >
-            <ExportOutlined /> 导出
-          </Button>,
-        ]}
         request={(params, sorter, filter) => handleList(params, sorter, filter)}
-        rowSelection={{
-          onChange: (_, rows) => {
-            setSelectedRows(rows);
-          },
-        }}
         {...schema}
       />
       {selectedRows?.length > 0 && (
@@ -144,21 +234,15 @@ const ConfigTable: React.FC = () => {
             </div>
           }
         >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRows);
-              setSelectedRows([]);
-              actionRef.current?.reload();
-            }}
-          >
-            批量删除
-          </Button>
+          {schema.options.batch.map((option: any) => renderBatchOptions(routeParams.table, option))}
         </FooterToolbar>
       )}
 
       <UpdateForm
         onSubmit={async (value) => {
-          const success = value.id ? await handleUpdate(value) : await handleAdd(value);
+          const success = value.id
+            ? await handleUpdate(routeParams.table, value)
+            : await handleAdd(routeParams.table, value);
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -170,8 +254,38 @@ const ConfigTable: React.FC = () => {
           setCurrentRow(undefined);
         }}
         updateModalVisible={updateModalVisible}
+        schema={formilyJson}
         values={currentRow || {}}
       />
+
+      <Modal
+        destroyOnClose
+        title="修改"
+        visible={showForm}
+        onCancel={() => {
+          setCurrentRow(undefined);
+          setShowForm(false);
+        }}
+        footer={null}
+      >
+        {currentRow?.id && (
+          <ProTable<TableItem, TableItem>
+            onSubmit={async (value) => {
+              const success = await handleAdd(routeParams.table, value);
+              if (success) {
+                setCurrentRow(undefined);
+                setShowForm(false);
+                if (actionRef.current) {
+                  actionRef.current.reload();
+                }
+              }
+            }}
+            type="form"
+            dataSource={[currentRow]}
+            {...schema}
+          />
+        )}
+      </Modal>
 
       <Drawer
         width={600}

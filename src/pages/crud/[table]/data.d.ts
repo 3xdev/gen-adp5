@@ -4,6 +4,7 @@ export interface RouteParams {
 
 export interface TableSchema {
   rowKey: string;
+  options: any;
   columns: ProColumns<T, ValueType>[];
 }
 
