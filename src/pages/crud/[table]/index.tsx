@@ -1,5 +1,5 @@
 import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
-import { Button, message, Drawer, Modal, Popconfirm } from 'antd';
+import { Button, message, Drawer, Popconfirm } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { useUpdateEffect } from 'ahooks';
 import { useParams } from 'umi';
@@ -11,7 +11,7 @@ import ProDescriptions from '@ant-design/pro-descriptions';
 import UpdateForm from './components/UpdateForm';
 import type { RouteParams, TableSchema, TableItem } from './data.d';
 import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
-import { getList, updateItem, addItem, removeItem } from './service';
+import { getList, getItem, updateItem, addItem, removeItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
 
 /**
@@ -52,17 +52,12 @@ const handleUpdate = async (table: string, fields: Partial<TableItem>) => {
 
 /**
  * 删除
- *
- * @param selectedRows
  */
-const handleRemove = async (table: string, selectedRows: TableItem[]) => {
+const handleRemove = async (table: string, ids: any) => {
   const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
+  if (!ids) return true;
   try {
-    await removeItem(
-      table,
-      selectedRows.map((row) => row.id),
-    );
+    await removeItem(table, ids);
     hide();
     message.success('删除成功，即将刷新');
     return true;
@@ -73,12 +68,11 @@ const handleRemove = async (table: string, selectedRows: TableItem[]) => {
 };
 
 const ConfigTable: React.FC = () => {
-  /** 更新窗口的弹窗 */
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
   const routeParams: RouteParams = useParams();
 
   const [schema, setSchema] = useState<TableSchema>({ rowKey: 'id', options: [], columns: [] });
   const [formilyJson, setFormilyJson] = useState({});
+  const [formilyValues, setFormilyValues] = useState<TableItem>();
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -106,14 +100,17 @@ const ConfigTable: React.FC = () => {
         };
         break;
       case 'edit':
-        _handle = () => {
-          setCurrentRow(record);
-          handleUpdateModalVisible(true);
+        _handle = async () => {
+          getItem(routeParams.table, record[schema.rowKey]).then((res) => {
+            setFormilyValues(res);
+            setShowForm(true);
+          });
         };
         break;
       case 'delete':
         _handle = async () => {
-          await handleRemove(table, [record]);
+          await handleRemove(table, record[schema.rowKey]);
+          setCurrentRow(undefined);
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -142,8 +139,8 @@ const ConfigTable: React.FC = () => {
     switch (option.type) {
       case 'add':
         _handle = () => {
-          handleUpdateModalVisible(true);
-          setCurrentRow(undefined);
+          setFormilyValues(undefined);
+          setShowForm(true);
         };
         _icon = <PlusOutlined />;
         break;
@@ -166,7 +163,7 @@ const ConfigTable: React.FC = () => {
     switch (option.type) {
       case 'bdelete':
         _handle = async () => {
-          await handleRemove(table, selectedRows);
+          await handleRemove(table, selectedRows.map((row) => row[schema.rowKey]).join(','));
           setSelectedRows([]);
           actionRef.current?.reload();
         };
@@ -177,12 +174,6 @@ const ConfigTable: React.FC = () => {
         {option.title}
       </Button>
     );
-  };
-
-  const rowSelection = {
-    onChange: (_: any, rows: any) => {
-      setSelectedRows(rows);
-    },
   };
 
   useEffect(() => {
@@ -203,13 +194,18 @@ const ConfigTable: React.FC = () => {
           res.options.toolbar.map((option: any) => renderToolbarOptions(res.columns, option));
       }
       if (res.options.batch?.length > 0) {
-        res.rowSelection = rowSelection;
+        res.rowSelection = {
+          onChange: (_: any, rows: any) => {
+            setSelectedRows(rows);
+          },
+        };
       }
       setSchema(res);
     });
     getFormilySchema(routeParams.table).then((res) => {
       setFormilyJson(res);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeParams.table]);
 
   useUpdateEffect(() => {
@@ -240,52 +236,23 @@ const ConfigTable: React.FC = () => {
 
       <UpdateForm
         onSubmit={async (value) => {
-          const success = value.id
+          const success = value[schema.rowKey]
             ? await handleUpdate(routeParams.table, value)
             : await handleAdd(routeParams.table, value);
           if (success) {
-            handleUpdateModalVisible(false);
+            setShowForm(false);
             setCurrentRow(undefined);
             actionRef.current?.reload();
           }
         }}
         onCancel={() => {
-          handleUpdateModalVisible(false);
-          setCurrentRow(undefined);
-        }}
-        updateModalVisible={updateModalVisible}
-        schema={formilyJson}
-        values={currentRow || {}}
-      />
-
-      <Modal
-        destroyOnClose
-        title="修改"
-        visible={showForm}
-        onCancel={() => {
-          setCurrentRow(undefined);
+          setFormilyValues(undefined);
           setShowForm(false);
         }}
-        footer={null}
-      >
-        {currentRow?.id && (
-          <ProTable<TableItem, TableItem>
-            onSubmit={async (value) => {
-              const success = await handleAdd(routeParams.table, value);
-              if (success) {
-                setCurrentRow(undefined);
-                setShowForm(false);
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            type="form"
-            dataSource={[currentRow]}
-            {...schema}
-          />
-        )}
-      </Modal>
+        updateModalVisible={showForm}
+        schema={formilyJson}
+        values={formilyValues}
+      />
 
       <Drawer
         width={600}
@@ -296,16 +263,10 @@ const ConfigTable: React.FC = () => {
         }}
         closable={false}
       >
-        {currentRow?.id && (
+        {currentRow && (
           <ProDescriptions<TableItem>
             column={2}
-            title={currentRow?.id}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.id,
-            }}
+            dataSource={currentRow}
             columns={schema.columns as ProDescriptionsItemProps<TableItem>[]}
           />
         )}
