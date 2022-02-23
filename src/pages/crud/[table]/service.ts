@@ -6,8 +6,12 @@ export async function getList(table: string, params?: Record<string, any>) {
   });
 }
 
-export async function removeItem(table: string, ids: number[]) {
-  return request(`/api/admin/crud/${table}/${ids.join(',')}`, {
+export async function getItem(table: string, id: any) {
+  return request(`/api/admin/crud/${table}/${id}`);
+}
+
+export async function removeItem(table: string, ids: any) {
+  return request(`/api/admin/crud/${table}/${ids}`, {
     method: 'DELETE',
   });
 }
