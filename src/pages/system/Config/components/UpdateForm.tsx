@@ -96,7 +96,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             form.setFieldState('tab', { dataSource: res.items });
           });
 
-          getDicts('field_component').then((res) => {
+          getDicts('config_component').then((res) => {
             form.setFieldState('component', { dataSource: res.items });
           });
 
