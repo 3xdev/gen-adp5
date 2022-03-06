@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useMemo, useState, useEffect } from 'react';
 import { history, useParams } from 'umi';
 import { createForm } from '@formily/core';
@@ -211,7 +212,7 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     x-component-props={{
                       style: {
-                        width: 120,
+                        width: 100,
                       },
                     }}
                     required
@@ -227,7 +228,7 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     x-component-props={{
                       style: {
-                        width: 120,
+                        width: 100,
                       },
                     }}
                     required
@@ -243,7 +244,7 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     x-component-props={{
                       style: {
-                        width: 100,
+                        width: 80,
                       },
                     }}
                   />
@@ -270,6 +271,16 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
+                  x-component-props={{ title: '查看不显' }}
+                >
+                  <SchemaField.Boolean
+                    name="hide_in_descriptions"
+                    x-decorator="FormItem"
+                    x-component="Switch"
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
                   x-component-props={{ title: '编辑不显' }}
                 >
                   <SchemaField.Boolean
@@ -280,12 +291,27 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '查看不显' }}
+                  x-component-props={{ title: '编辑必填' }}
                 >
                   <SchemaField.Boolean
-                    name="hide_in_descriptions"
+                    name="required"
                     x-decorator="FormItem"
                     x-component="Switch"
+                  />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '编辑默认值' }}
+                >
+                  <SchemaField.String
+                    name="default_value"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    x-component-props={{
+                      style: {
+                        width: 80,
+                      },
+                    }}
                   />
                 </SchemaField.Void>
                 <SchemaField.Void

@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable default-case */
 import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
 import { Button, message, Drawer, Popconfirm } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
@@ -133,20 +135,20 @@ const ConfigTable: React.FC = () => {
     );
   };
 
-  const renderToolbarOptions = (columns: any, option: any) => {
+  const renderToolbarOptions = (columns: any, option: any, records: any) => {
     let _handle = () => {};
     let _icon = <></>;
     switch (option.type) {
       case 'add':
         _handle = () => {
-          setFormilyValues(undefined);
+          setFormilyValues({});
           setShowForm(true);
         };
         _icon = <PlusOutlined />;
         break;
       case 'export':
         _handle = () => {
-          ExportExcel(columns, responseRows);
+          ExportExcel(columns, records);
         };
         _icon = <ExportOutlined />;
         break;
@@ -191,7 +193,9 @@ const ConfigTable: React.FC = () => {
       }
       if (res.options.toolbar?.length > 0) {
         res.toolBarRender = () =>
-          res.options.toolbar.map((option: any) => renderToolbarOptions(res.columns, option));
+          res.options.toolbar.map((option: any) =>
+            renderToolbarOptions(res.columns, option, responseRows),
+          );
       }
       if (res.options.batch?.length > 0) {
         res.rowSelection = {
@@ -240,6 +244,7 @@ const ConfigTable: React.FC = () => {
             ? await handleUpdate(routeParams.table, value)
             : await handleAdd(routeParams.table, value);
           if (success) {
+            setFormilyValues(undefined);
             setShowForm(false);
             setCurrentRow(undefined);
             actionRef.current?.reload();

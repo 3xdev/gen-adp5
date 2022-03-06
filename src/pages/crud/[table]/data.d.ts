@@ -10,9 +10,6 @@ export interface TableSchema {
 
 export interface TableItem {
   [x: string]: any;
-  id: number;
-  status: number;
-  create_time: string;
 }
 
 export interface UploadItem {
