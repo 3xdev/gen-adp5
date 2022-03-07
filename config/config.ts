@@ -3,7 +3,8 @@ import { defineConfig } from 'umi';
 import { join } from 'path';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
-
+// feat: 取消routes配置，进入约定式路由模式
+// import routes from './routes';
 const { REACT_APP_ENV } = process.env;
 export default defineConfig({
   hash: true,
@@ -13,6 +14,7 @@ export default defineConfig({
   },
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout
+    // feat: 不使用国际化配置
     locale: false,
     siderWidth: 208,
     ...defaultSettings,
@@ -23,10 +25,12 @@ export default defineConfig({
   targets: {
     ie: 11,
   },
+  // umi routes: https://umijs.org/docs/routing
+  // feat: 取消routes配置，进入约定式路由模式
+  // routes,
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   theme: {
-    'primary-color': defaultSettings.primaryColor,
-    'root-entry-name': 'default',
+    'root-entry-name': 'variable',
   },
   // esbuild is father build tools
   // https://umijs.org/plugins/plugin-esbuild
