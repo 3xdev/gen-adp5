@@ -1,8 +1,9 @@
-## 标准化项目管理后台
+## Gen 管理端
 
 ### 组件选型
 
 - @ant-design/charts 图表
+- @ant-design/pro-table 表格模板
 - @formily/core Formily 表单解决方案
 - braft-editor 富文本
 - xlsx Excel 处理

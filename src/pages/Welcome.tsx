@@ -11,7 +11,7 @@ const CodePreview: React.FC = ({ children }) => (
   </pre>
 );
 
-export default (): React.ReactNode => {
+const Welcome: React.FC = () => {
   return (
     <PageContainer>
       <Card>
@@ -56,3 +56,5 @@ export default (): React.ReactNode => {
     </PageContainer>
   );
 };
+
+export default Welcome;

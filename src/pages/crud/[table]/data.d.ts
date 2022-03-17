@@ -8,12 +8,7 @@ export interface TableSchema {
   columns: ProColumns<T, ValueType>[];
 }
 
-export interface TableItem {
-  [x: string]: any;
-  id: number;
-  status: number;
-  create_time: string;
-}
+export type TableItem = Record<string, any>;
 
 export interface UploadItem {
   loading?: boolean;

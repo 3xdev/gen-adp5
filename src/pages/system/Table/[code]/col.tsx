@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { useMemo, useState, useEffect } from 'react';
 import { history, useParams } from 'umi';
 import { createForm } from '@formily/core';
@@ -211,7 +212,7 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     x-component-props={{
                       style: {
-                        width: 120,
+                        width: 98,
                       },
                     }}
                     required
@@ -227,7 +228,7 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     x-component-props={{
                       style: {
-                        width: 120,
+                        width: 88,
                       },
                     }}
                     required
@@ -243,7 +244,7 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     x-component-props={{
                       style: {
-                        width: 100,
+                        width: 80,
                       },
                     }}
                   />
@@ -270,16 +271,6 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '编辑不显' }}
-                >
-                  <SchemaField.Boolean
-                    name="hide_in_form"
-                    x-decorator="FormItem"
-                    x-component="Switch"
-                  />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
                   x-component-props={{ title: '查看不显' }}
                 >
                   <SchemaField.Boolean
@@ -290,17 +281,12 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '占用格数' }}
+                  x-component-props={{ title: '编辑不显' }}
                 >
                   <SchemaField.Boolean
-                    name="col_size"
+                    name="hide_in_form"
                     x-decorator="FormItem"
-                    x-component="NumberPicker"
-                    x-component-props={{
-                      style: {
-                        width: 60,
-                      },
-                    }}
+                    x-component="Switch"
                   />
                 </SchemaField.Void>
                 <SchemaField.Void
@@ -313,7 +299,7 @@ const ColForm: React.FC = () => {
                     x-component="Select"
                     x-component-props={{
                       style: {
-                        width: 100,
+                        width: 110,
                       },
                     }}
                   />
@@ -328,42 +314,66 @@ const ColForm: React.FC = () => {
                     x-component="Select"
                     x-component-props={{
                       style: {
-                        width: 100,
+                        width: 110,
                       },
                     }}
                   />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表头筛选' }}
+                  x-component-props={{ title: '扩展' }}
                 >
-                  <SchemaField.Boolean name="filters" x-decorator="FormItem" x-component="Switch" />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表头排序' }}
-                >
-                  <SchemaField.Boolean name="sorter" x-decorator="FormItem" x-component="Switch" />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
-                  x-component-props={{ title: '自动缩略' }}
-                >
-                  <SchemaField.Boolean
-                    name="ellipsis"
-                    x-decorator="FormItem"
-                    x-component="Switch"
-                  />
-                </SchemaField.Void>
-                <SchemaField.Void
-                  x-component="ArrayTable.Column"
-                  x-component-props={{ title: '支持复制' }}
-                >
-                  <SchemaField.Boolean
-                    name="copyable"
-                    x-decorator="FormItem"
-                    x-component="Switch"
-                  />
+                  <SchemaField.Void x-component="Editable.Popover" name="void_table" title="列表">
+                    <SchemaField.String
+                      name="col_size"
+                      title="占用格数"
+                      x-decorator="FormItem"
+                      x-component="NumberPicker"
+                      x-component-props={{
+                        style: {
+                          width: 60,
+                        },
+                      }}
+                    />
+                    <SchemaField.Boolean
+                      name="filters"
+                      title="表头筛选"
+                      x-decorator="FormItem"
+                      x-component="Switch"
+                    />
+                    <SchemaField.Boolean
+                      name="sorter"
+                      title="表头排序"
+                      x-decorator="FormItem"
+                      x-component="Switch"
+                    />
+                    <SchemaField.Boolean
+                      name="ellipsis"
+                      title="自动缩略"
+                      x-decorator="FormItem"
+                      x-component="Switch"
+                    />
+                    <SchemaField.Boolean
+                      name="copyable"
+                      title="支持复制"
+                      x-decorator="FormItem"
+                      x-component="Switch"
+                    />
+                  </SchemaField.Void>
+                  <SchemaField.Void x-component="Editable.Popover" name="void_form" title="编辑">
+                    <SchemaField.String
+                      name="default_value"
+                      title="默认值"
+                      x-decorator="FormItem"
+                      x-component="Input"
+                    />
+                    <SchemaField.Boolean
+                      name="required"
+                      title="必填"
+                      x-decorator="FormItem"
+                      x-component="Switch"
+                    />
+                  </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
