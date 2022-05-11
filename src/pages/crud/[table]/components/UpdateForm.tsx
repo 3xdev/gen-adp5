@@ -33,6 +33,8 @@ import {
   FormButtonGroup,
 } from '@formily/antd';
 import { Card, Slider, Rate } from 'antd';
+import CustomImageUpload from '@/components/Formily/CustomImageUpload';
+import CustomRichText from '@/components/Formily/CustomRichText';
 
 const Text: React.FC<{
   content?: string;
@@ -74,6 +76,8 @@ const SchemaField = createSchemaField({
     Card,
     Slider,
     Rate,
+    CustomImageUpload,
+    CustomRichText,
   },
 });
 
@@ -99,7 +103,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     <Modal
       destroyOnClose
       title={values ? '编辑' : '添加'}
-      width={640}
+      width={800}
       visible={updateModalVisible}
       onCancel={() => onCancel()}
       footer={null}
