@@ -7,6 +7,7 @@ import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
+import type { ItemType } from 'antd/lib/menu/hooks/useItems';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -70,28 +71,35 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     return loading;
   }
 
-  const menuHeaderDropdown = (
-    <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {menu && (
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
-      {menu && (
-        <Menu.Item key="settings">
-          <SettingOutlined />
-          个人设置
-        </Menu.Item>
-      )}
-      {menu && <Menu.Divider />}
+  const menuItems: ItemType[] = [
+    ...(menu
+      ? [
+          {
+            key: 'center',
+            icon: <UserOutlined />,
+            label: '个人中心',
+          },
+          {
+            key: 'settings',
+            icon: <SettingOutlined />,
+            label: '个人设置',
+          },
+          {
+            type: 'divider' as const,
+          },
+        ]
+      : []),
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+    },
+  ];
 
-      <Menu.Item key="logout">
-        <LogoutOutlined />
-        退出登录
-      </Menu.Item>
-    </Menu>
+  const menuHeaderDropdown = (
+    <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick} items={menuItems} />
   );
+
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>

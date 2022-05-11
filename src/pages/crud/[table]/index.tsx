@@ -1,11 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable default-case */
 import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
-import { Button, message, Drawer, Popconfirm } from 'antd';
-import React, { useState, useRef, useEffect } from 'react';
+import { Button, message, Drawer, Popconfirm, Image } from 'antd';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useUpdateEffect } from 'ahooks';
 import { useParams } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import ProProvider from '@ant-design/pro-provider';
 import type { ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
@@ -69,8 +70,10 @@ const handleRemove = async (table: string, ids: any) => {
   }
 };
 
-const ConfigTable: React.FC = () => {
+const BasicTable: React.FC = () => {
   const routeParams: RouteParams = useParams();
+
+  const provider = useContext(ProProvider);
 
   const [schema, setSchema] = useState<TableSchema>({ rowKey: 'id', options: [], columns: [] });
   const [formilyJson, setFormilyJson] = useState({});
@@ -218,66 +221,89 @@ const ConfigTable: React.FC = () => {
 
   return (
     <PageContainer>
-      <ProTable<TableItem>
-        actionRef={actionRef}
-        search={{
-          labelWidth: 120,
+      <ProProvider.Provider
+        value={{
+          ...provider,
+          valueTypeMap: {
+            customImages: {
+              render: (text) => {
+                return text ? (
+                  <Image.PreviewGroup>
+                    {text.split(',').map((item: string) => (
+                      <Image width={32} key={item} src={item} />
+                    ))}
+                  </Image.PreviewGroup>
+                ) : (
+                  <>-</>
+                );
+              },
+            },
+          },
         }}
-        request={(params, sorter, filter) => handleList(params, sorter, filter)}
-        {...schema}
-      />
-      {selectedRows?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              已选择 <a style={{ fontWeight: 600 }}>{selectedRows.length}</a> 项
-            </div>
-          }
-        >
-          {schema.options.batch.map((option: any) => renderBatchOptions(routeParams.table, option))}
-        </FooterToolbar>
-      )}
+      >
+        <ProTable<TableItem>
+          actionRef={actionRef}
+          search={{
+            labelWidth: 120,
+          }}
+          request={(params, sorter, filter) => handleList(params, sorter, filter)}
+          {...schema}
+        />
+        {selectedRows?.length > 0 && (
+          <FooterToolbar
+            extra={
+              <div>
+                已选择 <a style={{ fontWeight: 600 }}>{selectedRows.length}</a> 项
+              </div>
+            }
+          >
+            {schema.options.batch.map((option: any) =>
+              renderBatchOptions(routeParams.table, option),
+            )}
+          </FooterToolbar>
+        )}
 
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = value[schema.rowKey]
-            ? await handleUpdate(routeParams.table, value)
-            : await handleAdd(routeParams.table, value);
-          if (success) {
+        <UpdateForm
+          onSubmit={async (value) => {
+            const success = value[schema.rowKey]
+              ? await handleUpdate(routeParams.table, value)
+              : await handleAdd(routeParams.table, value);
+            if (success) {
+              setFormilyValues(undefined);
+              setShowForm(false);
+              setCurrentRow(undefined);
+              actionRef.current?.reload();
+            }
+          }}
+          onCancel={() => {
             setFormilyValues(undefined);
             setShowForm(false);
-            setCurrentRow(undefined);
-            actionRef.current?.reload();
-          }
-        }}
-        onCancel={() => {
-          setFormilyValues(undefined);
-          setShowForm(false);
-        }}
-        updateModalVisible={showForm}
-        schema={formilyJson}
-        values={formilyValues}
-      />
+          }}
+          updateModalVisible={showForm}
+          schema={formilyJson}
+          values={formilyValues}
+        />
 
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow && (
-          <ProDescriptions<TableItem>
-            column={2}
-            dataSource={currentRow}
-            columns={schema.columns as ProDescriptionsItemProps<TableItem>[]}
-          />
-        )}
-      </Drawer>
+        <Drawer
+          width={600}
+          visible={showDetail}
+          onClose={() => {
+            setCurrentRow(undefined);
+            setShowDetail(false);
+          }}
+          closable={false}
+        >
+          {currentRow && (
+            <ProDescriptions<TableItem>
+              column={2}
+              dataSource={currentRow}
+              columns={schema.columns as ProDescriptionsItemProps<TableItem>[]}
+            />
+          )}
+        </Drawer>
+      </ProProvider.Provider>
     </PageContainer>
   );
 };
 
-export default ConfigTable;
+export default BasicTable;
