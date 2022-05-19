@@ -37,7 +37,7 @@ import { Button, message, Card, Slider, Rate } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import type { RouteParams, TableItem } from '../data.d';
 import { getItem, updateItem } from '../service';
-import { allDicts, getDicts } from '@/services/ant-design-pro/api';
+import { allTables, allDicts, getDicts } from '@/services/ant-design-pro/api';
 import { PageContainer } from '@ant-design/pro-layout';
 
 const Text: React.FC<{
@@ -114,6 +114,10 @@ const ColForm: React.FC = () => {
       createForm({
         initialValues: values,
         effects() {
+          const rels: any = [
+            { value: 'dict', label: '字典', children: [] },
+            { value: 'table', label: '表格', children: [] },
+          ];
           getDicts('common_status').then((res) => {
             form.setFieldState('status', { dataSource: res.items });
           });
@@ -131,11 +135,16 @@ const ColForm: React.FC = () => {
           });
           allDicts().then((res) => {
             const items: any = [];
-            items.push({ value: '', label: '无' });
             res.data.forEach((item: any) => {
-              items.push({ value: item.key_, label: item.label });
+              rels[0].children.push({ value: item.key_, label: item.label });
             });
-            form.setFieldState('cols.*.value_enum_dict_key', { dataSource: items });
+            form.setFieldState('cols.*.value_enum_rel', { dataSource: items });
+          });
+          allTables().then((res) => {
+            res.data.forEach((item: any) => {
+              rels[1].children.push({ value: item.code, label: item.name });
+            });
+            form.setFieldState('cols.*.value_enum_rel', { dataSource: rels });
           });
         },
       }),
@@ -306,12 +315,12 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '关联字典' }}
+                  x-component-props={{ title: '关联' }}
                 >
                   <SchemaField.Markup
-                    name="value_enum_dict_key"
+                    name="value_enum_rel"
                     x-decorator="FormItem"
-                    x-component="Select"
+                    x-component="Cascader"
                     x-component-props={{
                       style: {
                         width: 110,
