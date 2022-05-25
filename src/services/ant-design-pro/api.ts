@@ -30,6 +30,13 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
+/** 全部表格 */
+export async function allTables() {
+  return request('/api/admin/table?pageSize=99999', {
+    method: 'GET',
+  });
+}
+
 /** 全部字典 */
 export async function allDicts() {
   return request('/api/admin/dict?pageSize=99999', {
