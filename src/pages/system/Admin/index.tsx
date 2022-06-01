@@ -188,7 +188,7 @@ const AdminTable: React.FC = () => {
             type="primary"
             key="export"
             onClick={() => {
-              ExportExcel(columns, allRows, 'cc.xlsx');
+              ExportExcel(columns, allRows);
             }}
           >
             <ExportOutlined /> 导出

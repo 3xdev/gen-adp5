@@ -85,12 +85,12 @@ const BasicTable: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
   const [selectedRows, setSelectedRows] = useState<TableItem[]>([]);
-  const [responseRows, setResponseRows] = useState<TableItem[]>([]);
+  const responseRows = useRef<TableItem[]>([]);
 
   const handleList = async (params: any, sorter: any, filter: any) => {
     const result = getList(routeParams.table, { ...params, sorter, filter });
     result.then((res) => {
-      setResponseRows(res.data);
+      responseRows.current = res.data;
     });
     return result;
   };
@@ -138,7 +138,7 @@ const BasicTable: React.FC = () => {
     );
   };
 
-  const renderToolbarOptions = (columns: any, option: any, records: any) => {
+  const renderToolbarOptions = (columns: any, option: any) => {
     let _handle = () => {};
     let _icon = <></>;
     switch (option.type) {
@@ -151,7 +151,7 @@ const BasicTable: React.FC = () => {
         break;
       case 'export':
         _handle = () => {
-          ExportExcel(columns, records);
+          ExportExcel(columns, responseRows.current);
         };
         _icon = <ExportOutlined />;
         break;
@@ -170,7 +170,7 @@ const BasicTable: React.FC = () => {
         _handle = async () => {
           await handleRemove(table, selectedRows.map((row) => row[schema.rowKey]).join(','));
           setSelectedRows([]);
-          actionRef.current?.reload();
+          actionRef.current?.reloadAndRest?.();
         };
         break;
     }
@@ -196,9 +196,7 @@ const BasicTable: React.FC = () => {
       }
       if (res.options.toolbar?.length > 0) {
         res.toolBarRender = () =>
-          res.options.toolbar.map((option: any) =>
-            renderToolbarOptions(res.columns, option, responseRows),
-          );
+          res.options.toolbar.map((option: any) => renderToolbarOptions(res.columns, option));
       }
       if (res.options.batch?.length > 0) {
         res.rowSelection = {
