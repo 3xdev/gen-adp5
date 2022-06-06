@@ -73,7 +73,7 @@ const DictTable: React.FC = () => {
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
-  const [selectedRowsState, setSelectedRows] = useState<TableItem[]>([]);
+  const [selectedRows, setSelectedRows] = useState<TableItem[]>([]);
 
   const columns: ProColumns<TableItem>[] = [
     {
@@ -139,22 +139,22 @@ const DictTable: React.FC = () => {
         request={(params, sorter, filter) => getList({ ...params, sorter, filter })}
         columns={columns}
         rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
+          onChange: (_, rows) => {
+            setSelectedRows(rows);
           },
         }}
       />
-      {selectedRowsState?.length > 0 && (
+      {selectedRows?.length > 0 && (
         <FooterToolbar
           extra={
             <div>
-              已选择 <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a> 项
+              已选择 <a style={{ fontWeight: 600 }}>{selectedRows.length}</a> 项
             </div>
           }
         >
           <Button
             onClick={async () => {
-              await handleRemove(selectedRowsState);
+              await handleRemove(selectedRows);
               setSelectedRows([]);
               actionRef.current?.reloadAndRest?.();
             }}
