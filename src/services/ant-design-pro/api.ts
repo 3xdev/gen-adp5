@@ -44,6 +44,13 @@ export async function allDicts() {
   });
 }
 
+/** 全部角色 */
+export async function allRoles() {
+  return request('/api/admin/system_role?pageSize=99999', {
+    method: 'GET',
+  });
+}
+
 /** 获取字典 */
 export async function getDicts(name: string) {
   return request(`/api/admin/dict/${name}`, {
