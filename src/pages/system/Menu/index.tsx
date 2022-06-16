@@ -7,6 +7,7 @@ import ProTable from '@ant-design/pro-table';
 import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
 import { getList, updateItem, addItem, removeItem } from './service';
+import { allTables } from '@/services/ant-design-pro/api';
 
 /**
  * 添加
@@ -67,6 +68,7 @@ const MenuTable: React.FC = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
   const [datas, setDatas] = useState([]);
+  const [tables, setTables] = useState([]);
 
   const [currentRow, setCurrentRow] = useState<TableItem>();
 
@@ -77,6 +79,13 @@ const MenuTable: React.FC = () => {
   };
 
   useEffect(() => {
+    allTables().then((res) => {
+      const items: any = [];
+      res.data.forEach((item: any) => {
+        items[item.code] = item.name;
+      });
+      setTables(items);
+    });
     refresh();
   }, []);
 
@@ -92,6 +101,11 @@ const MenuTable: React.FC = () => {
     {
       title: '路径',
       dataIndex: 'path',
+    },
+    {
+      title: '关联表格',
+      dataIndex: 'table_code',
+      valueEnum: { ...tables },
     },
     {
       title: '图标',

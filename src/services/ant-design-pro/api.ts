@@ -58,9 +58,9 @@ export async function getDicts(name: string) {
   });
 }
 
-/** 获取菜单 */
+/** 获取管理员菜单 */
 export async function getMenus() {
-  return request('/api/admin/menu?status=1', {
+  return request('/api/admin/menus', {
     method: 'GET',
   });
 }

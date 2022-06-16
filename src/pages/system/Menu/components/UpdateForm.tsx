@@ -34,7 +34,7 @@ import {
 } from '@formily/antd';
 import { Card, Slider, Rate } from 'antd';
 import { getList } from '../service';
-import { getDicts } from '@/services/ant-design-pro/api';
+import { allTables, getDicts } from '@/services/ant-design-pro/api';
 
 const Text: React.FC<{
   value?: string;
@@ -89,6 +89,7 @@ export interface UpdateFormProps {
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const { updateModalVisible, values, onCancel, onSubmit } = props;
+
   const form = useMemo(
     () =>
       createForm({
@@ -101,6 +102,14 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
               items.push({ value: item.id, label: item.name });
             });
             form.setFieldState('parent_id', { dataSource: items });
+          });
+          allTables().then((res) => {
+            const items: any = [];
+            items.push({ value: '', label: '无' });
+            res.data.forEach((item: any) => {
+              items.push({ value: item.code, label: item.name });
+            });
+            form.setFieldState('table_code', { dataSource: items });
           });
           getDicts('common_status').then((res) => {
             form.setFieldState('status', { dataSource: res.items });
@@ -150,6 +159,12 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             title="访问路由"
             x-decorator="FormItem"
             x-component="Input"
+          />
+          <SchemaField.String
+            name="table_code"
+            title="关联表格"
+            x-decorator="FormItem"
+            x-component="Select"
           />
           <SchemaField.String
             name="icon"
