@@ -207,7 +207,7 @@ const BasicTable: React.FC = () => {
       }
       setSchema(res);
     });
-    getFormilySchema(routeParams.table).then((res) => {
+    getFormilySchema('table', routeParams.table).then((res) => {
       setFormilyJson(res);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

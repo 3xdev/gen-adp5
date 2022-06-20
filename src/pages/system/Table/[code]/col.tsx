@@ -161,6 +161,7 @@ const ColForm: React.FC = () => {
               title="代码"
               x-decorator="FormItem"
               x-component="Input"
+              readOnly
               required
             />
             <SchemaField.String

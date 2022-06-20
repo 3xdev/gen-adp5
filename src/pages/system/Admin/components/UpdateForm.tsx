@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Modal, Select, Button, Upload, notification } from 'antd';
 import type { TableItem, UploadItem } from '../data.d';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { allRoles } from '@/services/ant-design-pro/api';
 
 export interface UpdateFormProps {
   onCancel: (flag?: boolean) => void;
@@ -20,8 +21,19 @@ const formLayout = {
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const formVals = props.values;
   const [form] = Form.useForm();
+  const [roles, setRoles] = useState([]);
   const [uploadVal, setUploadVal] = useState<UploadItem>({ loading: false, url: formVals.avatar });
   const { onSubmit: handleUpdate, onCancel: handleUpdateModalVisible, updateModalVisible } = props;
+
+  useEffect(() => {
+    allRoles().then((res) => {
+      const items: any = [];
+      res.data.forEach((item: any) => {
+        items[item.id] = item;
+      });
+      setRoles(items);
+    });
+  }, []);
 
   const handleSubmit = async () => {
     const fieldsValue = await form.validateFields();
@@ -74,6 +86,15 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         </FormItem>
         <FormItem name="username" label="帐号">
           <Input />
+        </FormItem>
+        <FormItem name="roles" label="角色">
+          <Select mode="multiple">
+            {roles.map((role: any) => (
+              <>
+                <Option value={role.id}>{role.name}</Option>
+              </>
+            ))}
+          </Select>
         </FormItem>
         <FormItem name="nickname" label="昵称">
           <Input />

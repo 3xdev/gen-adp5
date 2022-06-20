@@ -116,7 +116,7 @@ const Setting: React.FC = () => {
         initialValues: values,
         effects() {
           onFormInit(() => {
-            getFormilySchema('setting').then((res) => {
+            getFormilySchema('form', 'setting').then((res) => {
               setSchema(res);
             });
           });
