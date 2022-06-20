@@ -1,5 +1,4 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { history } from 'umi';
 import { Button, message, Popconfirm } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -7,7 +6,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import UpdateForm from './components/UpdateForm';
 import type { TableItem } from './data.d';
-import { getList, addItem, removeItem } from './service';
+import { getList, addItem, updateItem, removeItem } from './service';
 
 /**
  * 添加
@@ -20,6 +19,24 @@ const handleAdd = async (fields: TableItem) => {
     await addItem({ ...fields });
     hide();
     message.success('添加成功');
+    return true;
+  } catch (error) {
+    hide();
+    return false;
+  }
+};
+
+/**
+ * 更新
+ *
+ * @param fields
+ */
+const handleUpdate = async (fields: Partial<TableItem>) => {
+  const hide = message.loading('正在更新');
+  try {
+    await updateItem({ ...fields });
+    hide();
+    message.success('更新成功');
     return true;
   } catch (error) {
     hide();
@@ -46,7 +63,7 @@ const handleRemove = async (selectedRows: TableItem[]) => {
   }
 };
 
-const TableTable: React.FC = () => {
+const FormTable: React.FC = () => {
   /** 更新窗口的弹窗 */
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
@@ -62,13 +79,6 @@ const TableTable: React.FC = () => {
     {
       title: '名称',
       dataIndex: 'name',
-    },
-    {
-      title: '属性',
-      dataIndex: 'props',
-      search: false,
-      ellipsis: true,
-      render: (dom, record) => <>{JSON.stringify(record.props)}</>,
     },
     {
       title: '状态',
@@ -94,12 +104,13 @@ const TableTable: React.FC = () => {
       valueType: 'option',
       render: (_, record) => [
         <a
-          key="col"
+          key="update"
           onClick={() => {
-            history.push(`${history.location.pathname}/${record.code}/col`);
+            handleUpdateModalVisible(true);
+            setCurrentRow(record);
           }}
         >
-          设计
+          修改
         </a>,
         <Popconfirm
           key="delconfirm"
@@ -143,7 +154,7 @@ const TableTable: React.FC = () => {
 
       <UpdateForm
         onSubmit={async (value) => {
-          const success = await handleAdd(value);
+          const success = value.add ? await handleAdd(value) : await handleUpdate(value);
           if (success) {
             handleUpdateModalVisible(false);
             setCurrentRow(undefined);
@@ -157,10 +168,10 @@ const TableTable: React.FC = () => {
           setCurrentRow(undefined);
         }}
         updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
+        values={currentRow || { add: true }}
       />
     </PageContainer>
   );
 };
 
-export default TableTable;
+export default FormTable;

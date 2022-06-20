@@ -32,14 +32,14 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 
 /** 全部表格 */
 export async function allTables() {
-  return request('/api/admin/table?pageSize=99999', {
+  return request('/api/admin/system_table?pageSize=99999', {
     method: 'GET',
   });
 }
 
 /** 全部字典 */
 export async function allDicts() {
-  return request('/api/admin/dict?pageSize=99999', {
+  return request('/api/admin/system_dict?pageSize=99999', {
     method: 'GET',
   });
 }
@@ -53,7 +53,7 @@ export async function allRoles() {
 
 /** 获取字典 */
 export async function getDicts(name: string) {
-  return request(`/api/admin/dict/${name}`, {
+  return request(`/api/admin/system_dict/${name}`, {
     method: 'GET',
   });
 }
@@ -69,58 +69,14 @@ export async function getMenus() {
 export async function getProTableSchema(table: string) {
   return request(`/api/admin/schema/protable/${table}`);
 }
-export async function getFormilySchema(table: string) {
-  return request(`/api/admin/schema/formily/${table}`);
+export async function getFormilySchema(type: string, code: string) {
+  return request(`/api/admin/schema/formily/${type}/${code}`);
 }
 
 /** 此处后端没有提供注释 GET /api/admin/notices */
 export async function getNotices(options?: { [key: string]: any }) {
   return request<API.NoticeIconList>('/api/admin/notices', {
     method: 'GET',
-    ...(options || {}),
-  });
-}
-
-/** 获取规则列表 GET /api/admin/rule */
-export async function rule(
-  params: {
-    // query
-    /** 当前的页码 */
-    current?: number;
-    /** 页面的容量 */
-    pageSize?: number;
-  },
-  options?: { [key: string]: any },
-) {
-  return request<API.RuleList>('/api/admin/rule', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
-}
-
-/** 新建规则 PUT /api/admin/rule */
-export async function updateRule(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/admin/rule', {
-    method: 'PUT',
-    ...(options || {}),
-  });
-}
-
-/** 新建规则 POST /api/admin/rule */
-export async function addRule(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/admin/rule', {
-    method: 'POST',
-    ...(options || {}),
-  });
-}
-
-/** 删除规则 DELETE /api/admin/rule */
-export async function removeRule(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/admin/rule', {
-    method: 'DELETE',
     ...(options || {}),
   });
 }
