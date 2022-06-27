@@ -456,6 +456,28 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
+                  x-component-props={{ title: '接口/路径' }}
+                >
+                  <SchemaField.Void x-component="FormGrid">
+                    <SchemaField.Markup
+                      name="method"
+                      x-decorator="FormItem"
+                      x-component="Select"
+                      enum={[
+                        { label: 'PUT', value: 'PUT' },
+                        { label: 'POST', value: 'POST' },
+                      ]}
+                    />
+                    <SchemaField.String
+                      name="path"
+                      x-decorator="FormItem"
+                      x-decorator-props={{ gridSpan: 3 }}
+                      x-component="Input"
+                    />
+                  </SchemaField.Void>
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
                   x-component-props={{ title: '需要确认' }}
                 >
                   <SchemaField.Boolean name="confirm" x-decorator="FormItem" x-component="Switch" />
@@ -478,7 +500,7 @@ const ColForm: React.FC = () => {
               x-decorator="FormItem"
               x-component="ArrayTable"
               x-component-props={{
-                title: () => '列操作',
+                title: () => '工具栏操作',
                 pagination: {
                   pageSize: 999,
                 },

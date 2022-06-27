@@ -8,6 +8,14 @@ export interface TableSchema {
   columns: ProColumns<T, ValueType>[];
 }
 
+export interface TableOption {
+  type: string;
+  key: string;
+  title: string;
+  method: string;
+  path: string;
+}
+
 export type TableItem = Record<string, any>;
 
 export interface UploadItem {
