@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { createForm, onFormInit } from '@formily/core';
+import React, { useState, useEffect } from 'react';
+import { createForm } from '@formily/core';
 import { createSchemaField } from '@formily/react';
 import {
   Form,
@@ -32,7 +32,9 @@ import {
   FormButtonGroup,
 } from '@formily/antd';
 import { Card, Slider, Rate, message } from 'antd';
-import { getConfigs, updateSetting } from './service';
+import CustomImageUpload from '@/components/Formily/CustomImageUpload';
+import CustomRichText from '@/components/Formily/CustomRichText';
+import { updateSetting } from './service';
 import { getFormilySchema } from '@/services/ant-design-pro/api';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
@@ -77,6 +79,8 @@ const SchemaField = createSchemaField({
     Card,
     Slider,
     Rate,
+    CustomImageUpload,
+    CustomRichText,
   },
 });
 
@@ -98,32 +102,14 @@ const handleSetting = async (fields: any) => {
 
 const Setting: React.FC = () => {
   const [schema, setSchema] = useState({});
-  const [values, setValues] = useState({});
 
   useEffect(() => {
-    getConfigs().then((cres) => {
-      const items: any = {};
-      cres.data.forEach((item: any) => {
-        items[item.code] = item.value;
-      });
-      setValues(items);
+    getFormilySchema('form', 'setting').then((res) => {
+      setSchema(res);
     });
   }, []);
 
-  const form = useMemo(
-    () =>
-      createForm({
-        initialValues: values,
-        effects() {
-          onFormInit(() => {
-            getFormilySchema('form', 'setting').then((res) => {
-              setSchema(res);
-            });
-          });
-        },
-      }),
-    [values],
-  );
+  const form = createForm({});
 
   return (
     <PageContainer>

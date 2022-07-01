@@ -145,14 +145,8 @@ const BasicTable: React.FC = () => {
         break;
     }
 
-    return option.confirm ? (
-      <Popconfirm
-        key={option.key}
-        title={`是否确认${option.title}吗?`}
-        okText="是"
-        cancelText="否"
-        onConfirm={_handle}
-      >
+    return option.type == 'delete' ? (
+      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
         <a>{option.title}</a>
       </Popconfirm>
     ) : (
@@ -198,7 +192,11 @@ const BasicTable: React.FC = () => {
         };
         break;
     }
-    return (
+    return option.type == 'bdelete' ? (
+      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <Button>{option.title}</Button>
+      </Popconfirm>
+    ) : (
       <Button key={option.key} onClick={_handle}>
         {option.title}
       </Button>

@@ -96,7 +96,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             form.setFieldState('tab', { dataSource: res.items });
           });
 
-          getDicts('config_component').then((res) => {
+          getDicts('table_col_value_type').then((res) => {
             form.setFieldState('component', { dataSource: res.items });
           });
 
@@ -109,7 +109,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           });
 
           onFieldReact('dict_key', (field) => {
-            field.display = ['Select', 'Checkbox.Group', 'Radio.Group'].includes(
+            field.display = ['select', 'radio', 'checkbox'].includes(
               field.query('component').value(),
             )
               ? 'visible'

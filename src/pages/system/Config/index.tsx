@@ -97,7 +97,7 @@ const ConfigTable: React.FC = () => {
       });
       setTabs(items);
     });
-    getDicts('config_component').then((res) => {
+    getDicts('table_col_value_type').then((res) => {
       const items: any = [];
       res.items.forEach((item: any) => {
         items[item.value] = item.label;
