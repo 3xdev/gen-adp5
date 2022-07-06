@@ -29,3 +29,10 @@ export async function updateItem(table: string, params: Record<string, any>) {
     data: params,
   });
 }
+
+export async function restItem(method: string, path: string, params: Record<string, any>) {
+  return request(`${path}/${params.id}`, {
+    method: method,
+    data: params,
+  });
+}

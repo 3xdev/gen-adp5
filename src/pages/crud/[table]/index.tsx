@@ -4,7 +4,7 @@ import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
 import { Button, message, Drawer, Popconfirm, Image } from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useUpdateEffect } from 'ahooks';
-import { useParams } from 'umi';
+import { history, useParams } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProProvider from '@ant-design/pro-provider';
 import type { ActionType } from '@ant-design/pro-table';
@@ -12,9 +12,10 @@ import ProTable from '@ant-design/pro-table';
 import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import UpdateForm from './components/UpdateForm';
-import type { RouteParams, TableSchema, TableItem } from './data.d';
+import ModalForm from './components/ModalForm';
+import type { RouteParams, TableSchema, TableOption, TableItem } from './data.d';
 import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
-import { getList, getItem, updateItem, addItem, removeItem } from './service';
+import { getList, getItem, updateItem, addItem, removeItem, restItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
 
 /**
@@ -76,11 +77,20 @@ const BasicTable: React.FC = () => {
   const provider = useContext(ProProvider);
 
   const [schema, setSchema] = useState<TableSchema>({ rowKey: 'id', options: [], columns: [] });
+  const [tableOption, setTableOption] = useState<TableOption>({
+    type: '',
+    key: '',
+    title: '',
+    method: '',
+    path: '',
+  });
+  const [formSchema, setFormSchema] = useState([{}]);
   const [formilyJson, setFormilyJson] = useState({});
   const [formilyValues, setFormilyValues] = useState<TableItem>();
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [showForm, setShowForm] = useState<boolean>(false);
+  const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
+  const [showModalForm, setShowModalForm] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
@@ -108,7 +118,7 @@ const BasicTable: React.FC = () => {
         _handle = async () => {
           getItem(routeParams.table, record[schema.rowKey]).then((res) => {
             setFormilyValues(res);
-            setShowForm(true);
+            setShowUpdateForm(true);
           });
         };
         break;
@@ -119,16 +129,24 @@ const BasicTable: React.FC = () => {
           actionRef.current?.reloadAndRest?.();
         };
         break;
+      case 'modal':
+        _handle = async () => {
+          getItem(routeParams.table, record[schema.rowKey]).then((res) => {
+            setFormilyValues(res);
+            setShowModalForm(true);
+            setTableOption(option);
+          });
+        };
+        break;
+      case 'page':
+        _handle = () => {
+          history.push(option.path);
+        };
+        break;
     }
 
-    return option.confirm ? (
-      <Popconfirm
-        key={option.key}
-        title={`是否确认${option.title}吗?`}
-        okText="是"
-        cancelText="否"
-        onConfirm={_handle}
-      >
+    return option.type == 'delete' ? (
+      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
         <a>{option.title}</a>
       </Popconfirm>
     ) : (
@@ -145,7 +163,7 @@ const BasicTable: React.FC = () => {
       case 'add':
         _handle = () => {
           setFormilyValues({});
-          setShowForm(true);
+          setShowUpdateForm(true);
         };
         _icon = <PlusOutlined />;
         break;
@@ -174,7 +192,11 @@ const BasicTable: React.FC = () => {
         };
         break;
     }
-    return (
+    return option.type == 'bdelete' ? (
+      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <Button>{option.title}</Button>
+      </Popconfirm>
+    ) : (
       <Button key={option.key} onClick={_handle}>
         {option.title}
       </Button>
@@ -206,6 +228,15 @@ const BasicTable: React.FC = () => {
         };
       }
       setSchema(res);
+      // 读取操作表单
+      res.options.columns.forEach((option: any) => {
+        if (option.type == 'modal') {
+          getFormilySchema('form', option.key).then((sres) => {
+            formSchema[option.key] = sres;
+            setFormSchema(formSchema);
+          });
+        }
+      });
     });
     getFormilySchema('table', routeParams.table).then((res) => {
       setFormilyJson(res);
@@ -267,18 +298,34 @@ const BasicTable: React.FC = () => {
               ? await handleUpdate(routeParams.table, value)
               : await handleAdd(routeParams.table, value);
             if (success) {
-              setFormilyValues(undefined);
-              setShowForm(false);
+              setShowUpdateForm(false);
               setCurrentRow(undefined);
               actionRef.current?.reload();
             }
           }}
           onCancel={() => {
-            setFormilyValues(undefined);
-            setShowForm(false);
+            setShowUpdateForm(false);
           }}
-          updateModalVisible={showForm}
+          updateModalVisible={showUpdateForm}
           schema={formilyJson}
+          values={formilyValues}
+        />
+
+        <ModalForm
+          onSubmit={async (value) => {
+            const success = await restItem(tableOption.method, tableOption.path, value);
+            if (success) {
+              setShowModalForm(false);
+              setCurrentRow(undefined);
+              actionRef.current?.reload();
+            }
+          }}
+          onCancel={() => {
+            setShowModalForm(false);
+          }}
+          updateModalVisible={showModalForm}
+          title={tableOption.title}
+          schema={formSchema[tableOption.key]}
           values={formilyValues}
         />
 

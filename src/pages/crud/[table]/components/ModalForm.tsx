@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
+import { Modal } from 'antd';
 import { createForm } from '@formily/core';
 import { createSchemaField } from '@formily/react';
 import {
@@ -31,13 +32,9 @@ import {
   ArrayCards,
   FormButtonGroup,
 } from '@formily/antd';
-import { Card, Slider, Rate, message } from 'antd';
+import { Card, Slider, Rate } from 'antd';
 import CustomImageUpload from '@/components/Formily/CustomImageUpload';
 import CustomRichText from '@/components/Formily/CustomRichText';
-import { updateSetting } from './service';
-import { getFormilySchema } from '@/services/ant-design-pro/api';
-import { PageContainer } from '@ant-design/pro-layout';
-import ProCard from '@ant-design/pro-card';
 
 const Text: React.FC<{
   content?: string;
@@ -84,46 +81,43 @@ const SchemaField = createSchemaField({
   },
 });
 
-/**
- * 保存设置
- */
-const handleSetting = async (fields: any) => {
-  const hide = message.loading('正在更新');
-  try {
-    await updateSetting({ ...fields });
-    hide();
-    message.success('更新成功');
-    return true;
-  } catch (error) {
-    hide();
-    return false;
-  }
-};
+export interface ModalFormProps {
+  onCancel: (flag?: boolean) => void;
+  onSubmit: (values: any) => void;
+  updateModalVisible: boolean;
+  title: string;
+  schema: any;
+  values: any;
+}
 
-const Setting: React.FC = () => {
-  const [schema, setSchema] = useState({});
-
-  useEffect(() => {
-    getFormilySchema('form', 'setting').then((res) => {
-      setSchema(res);
-    });
-  }, []);
-
-  const form = createForm({});
+const ModalForm: React.FC<ModalFormProps> = (props) => {
+  const { updateModalVisible, title, schema, values, onCancel, onSubmit } = props;
+  const form = useMemo(
+    () =>
+      createForm({
+        initialValues: values,
+      }),
+    [values],
+  );
 
   return (
-    <PageContainer>
-      <ProCard>
-        <Form form={form} labelCol={3} wrapperCol={12}>
-          <SchemaField schema={schema} />
-          <FormButtonGroup.FormItem>
-            <Reset>重置</Reset>
-            <Submit onSubmit={handleSetting}>提交</Submit>
-          </FormButtonGroup.FormItem>
-        </Form>
-      </ProCard>
-    </PageContainer>
+    <Modal
+      destroyOnClose
+      title={title}
+      width={800}
+      visible={updateModalVisible}
+      onCancel={() => onCancel()}
+      footer={null}
+    >
+      <Form form={form} labelCol={6} wrapperCol={16}>
+        <SchemaField schema={schema} />
+        <FormButtonGroup.FormItem>
+          <Reset>重置</Reset>
+          <Submit onSubmit={onSubmit}>提交</Submit>
+        </FormButtonGroup.FormItem>
+      </Form>
+    </Modal>
   );
 };
 
-export default Setting;
+export default ModalForm;

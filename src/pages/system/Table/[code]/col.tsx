@@ -121,16 +121,16 @@ const ColForm: React.FC = () => {
           getDicts('common_status').then((res) => {
             form.setFieldState('status', { dataSource: res.items });
           });
-          getDicts('col_value_type').then((res) => {
+          getDicts('table_col_value_type').then((res) => {
             form.setFieldState('cols.*.value_type', { dataSource: res.items });
           });
-          getDicts('table_columns_option_type').then((res) => {
+          getDicts('table_option_type_columns').then((res) => {
             form.setFieldState('options.columns.*.type', { dataSource: res.items });
           });
-          getDicts('table_toolbar_option_type').then((res) => {
+          getDicts('table_option_type_toolbar').then((res) => {
             form.setFieldState('options.toolbar.*.type', { dataSource: res.items });
           });
-          getDicts('table_batch_option_type').then((res) => {
+          getDicts('table_option_type_batch').then((res) => {
             form.setFieldState('options.batch.*.type', { dataSource: res.items });
           });
           allDicts().then((res) => {
@@ -456,9 +456,25 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '需要确认' }}
+                  x-component-props={{ title: '接口/路径' }}
                 >
-                  <SchemaField.Boolean name="confirm" x-decorator="FormItem" x-component="Switch" />
+                  <SchemaField.Void x-component="FormGrid">
+                    <SchemaField.Markup
+                      name="method"
+                      x-decorator="FormItem"
+                      x-component="Select"
+                      enum={[
+                        { label: 'PUT', value: 'PUT' },
+                        { label: 'POST', value: 'POST' },
+                      ]}
+                    />
+                    <SchemaField.String
+                      name="path"
+                      x-decorator="FormItem"
+                      x-decorator-props={{ gridSpan: 3 }}
+                      x-component="Input"
+                    />
+                  </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -478,7 +494,7 @@ const ColForm: React.FC = () => {
               x-decorator="FormItem"
               x-component="ArrayTable"
               x-component-props={{
-                title: () => '列操作',
+                title: () => '工具栏操作',
                 pagination: {
                   pageSize: 999,
                 },
@@ -531,9 +547,25 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '路径' }}
+                  x-component-props={{ title: '接口/路径' }}
                 >
-                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
+                  <SchemaField.Void x-component="FormGrid">
+                    <SchemaField.Markup
+                      name="method"
+                      x-decorator="FormItem"
+                      x-component="Select"
+                      enum={[
+                        { label: 'PUT', value: 'PUT' },
+                        { label: 'POST', value: 'POST' },
+                      ]}
+                    />
+                    <SchemaField.String
+                      name="path"
+                      x-decorator="FormItem"
+                      x-decorator-props={{ gridSpan: 3 }}
+                      x-component="Input"
+                    />
+                  </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -603,6 +635,28 @@ const ColForm: React.FC = () => {
                     x-component="Input"
                     required
                   />
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '接口/路径' }}
+                >
+                  <SchemaField.Void x-component="FormGrid">
+                    <SchemaField.Markup
+                      name="method"
+                      x-decorator="FormItem"
+                      x-component="Select"
+                      enum={[
+                        { label: 'PUT', value: 'PUT' },
+                        { label: 'POST', value: 'POST' },
+                      ]}
+                    />
+                    <SchemaField.String
+                      name="path"
+                      x-decorator="FormItem"
+                      x-decorator-props={{ gridSpan: 3 }}
+                      x-component="Input"
+                    />
+                  </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
