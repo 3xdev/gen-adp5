@@ -140,12 +140,19 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(option.path);
+          history.push(option.path + '/' + record[schema.rowKey]);
+        };
+        break;
+      case 'request':
+        _handle = async () => {
+          await restItem(option.method, option.path + '/' + record[schema.rowKey], option.body);
+          setSelectedRows([]);
+          actionRef.current?.reloadAndRest?.();
         };
         break;
     }
 
-    return option.type == 'delete' ? (
+    return ['delete', 'request'].includes(option.type) ? (
       <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
         <a>{option.title}</a>
       </Popconfirm>
@@ -173,6 +180,24 @@ const BasicTable: React.FC = () => {
         };
         _icon = <ExportOutlined />;
         break;
+      case 'modal':
+        _handle = () => {
+          setFormilyValues({ ids: '0' });
+          setShowModalForm(true);
+          setTableOption(option);
+        };
+        break;
+      case 'page':
+        _handle = () => {
+          history.push(option.path);
+        };
+        break;
+      case 'request':
+        _handle = async () => {
+          await restItem(option.method, option.path + '/0', option.body);
+          actionRef.current?.reloadAndRest?.();
+        };
+        break;
     }
     return (
       <Button type="primary" key={option.key} onClick={_handle}>
@@ -191,8 +216,31 @@ const BasicTable: React.FC = () => {
           actionRef.current?.reloadAndRest?.();
         };
         break;
+      case 'modal':
+        _handle = () => {
+          setFormilyValues({ ids: selectedRows.map((row) => row[schema.rowKey]).join(',') });
+          setShowModalForm(true);
+          setTableOption(option);
+        };
+        break;
+      case 'page':
+        _handle = () => {
+          history.push(option.path + '/' + selectedRows.map((row) => row[schema.rowKey]).join(','));
+        };
+        break;
+      case 'request':
+        _handle = async () => {
+          await restItem(
+            option.method,
+            option.path + '/' + selectedRows.map((row) => row[schema.rowKey]).join(','),
+            option.body,
+          );
+          setSelectedRows([]);
+          actionRef.current?.reloadAndRest?.();
+        };
+        break;
     }
-    return option.type == 'bdelete' ? (
+    return ['bdelete', 'request'].includes(option.type) ? (
       <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
         <Button>{option.title}</Button>
       </Popconfirm>
@@ -313,7 +361,11 @@ const BasicTable: React.FC = () => {
 
         <ModalForm
           onSubmit={async (value) => {
-            const success = await restItem(tableOption.method, tableOption.path, value);
+            const success = await restItem(
+              tableOption.method,
+              `${tableOption.path}/${value.ids ? value.ids : value.id}`,
+              value,
+            );
             if (success) {
               setShowModalForm(false);
               setCurrentRow(undefined);

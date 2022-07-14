@@ -377,6 +377,12 @@ const ColForm: React.FC = () => {
                       x-decorator="FormItem"
                       x-component="Input"
                     />
+                    <SchemaField.String
+                      name="reactions"
+                      title="联动"
+                      x-decorator="FormItem"
+                      x-component="Input.TextArea"
+                    />
                     <SchemaField.Boolean
                       name="required"
                       title="必填"
@@ -466,6 +472,7 @@ const ColForm: React.FC = () => {
                       enum={[
                         { label: 'PUT', value: 'PUT' },
                         { label: 'POST', value: 'POST' },
+                        { label: 'DELETE', value: 'DELETE' },
                       ]}
                     />
                     <SchemaField.String
@@ -475,6 +482,12 @@ const ColForm: React.FC = () => {
                       x-component="Input"
                     />
                   </SchemaField.Void>
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '请求体/参数' }}
+                >
+                  <SchemaField.String name="body" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -557,6 +570,7 @@ const ColForm: React.FC = () => {
                       enum={[
                         { label: 'PUT', value: 'PUT' },
                         { label: 'POST', value: 'POST' },
+                        { label: 'DELETE', value: 'DELETE' },
                       ]}
                     />
                     <SchemaField.String
@@ -566,6 +580,12 @@ const ColForm: React.FC = () => {
                       x-component="Input"
                     />
                   </SchemaField.Void>
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '请求体/参数' }}
+                >
+                  <SchemaField.String name="body" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -648,6 +668,7 @@ const ColForm: React.FC = () => {
                       enum={[
                         { label: 'PUT', value: 'PUT' },
                         { label: 'POST', value: 'POST' },
+                        { label: 'DELETE', value: 'DELETE' },
                       ]}
                     />
                     <SchemaField.String
@@ -657,6 +678,12 @@ const ColForm: React.FC = () => {
                       x-component="Input"
                     />
                   </SchemaField.Void>
+                </SchemaField.Void>
+                <SchemaField.Void
+                  x-component="ArrayTable.Column"
+                  x-component-props={{ title: '请求体/参数' }}
+                >
+                  <SchemaField.String name="body" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
