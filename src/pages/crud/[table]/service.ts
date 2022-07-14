@@ -31,7 +31,7 @@ export async function updateItem(table: string, params: Record<string, any>) {
 }
 
 export async function restItem(method: string, path: string, params: Record<string, any>) {
-  return request(`${path}/${params.id}`, {
+  return request(path, {
     method: method,
     data: params,
   });
