@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
+import defaultSettings from '../../../../config/defaultSettings';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -59,8 +60,8 @@ const Login = () => {
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle={'Ant Design 是西湖区最具影响力的 Web 设计规范'}
+          title={defaultSettings.title || ''}
+          subTitle=" "
           initialValues={{
             autoLogin: true,
           }}
