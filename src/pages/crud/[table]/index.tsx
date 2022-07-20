@@ -277,14 +277,16 @@ const BasicTable: React.FC = () => {
       }
       setSchema(res);
       // 读取操作表单
-      res.options.columns.forEach((option: any) => {
-        if (option.type == 'modal') {
-          getFormilySchema('form', option.key).then((sres) => {
-            formSchema[option.key] = sres;
-            setFormSchema(formSchema);
-          });
-        }
-      });
+      [...res.options.columns, ...res.options.toolbar, ...res.options.batch].forEach(
+        (option: any) => {
+          if (option.type == 'modal') {
+            getFormilySchema('form', option.key).then((sres) => {
+              formSchema[option.key] = sres;
+              setFormSchema(formSchema);
+            });
+          }
+        },
+      );
     });
     getFormilySchema('table', routeParams.table).then((res) => {
       setFormilyJson(res);
