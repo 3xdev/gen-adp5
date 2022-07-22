@@ -4,7 +4,7 @@ import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
 import { Button, message, Drawer, Popconfirm, Image } from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useUpdateEffect } from 'ahooks';
-import { history, useParams } from 'umi';
+import { history, useParams, Link } from 'umi';
 import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
 import ProProvider from '@ant-design/pro-provider';
 import type { ActionType } from '@ant-design/pro-table';
@@ -253,6 +253,13 @@ const BasicTable: React.FC = () => {
 
   useEffect(() => {
     getProTableSchema(routeParams.table).then((res) => {
+      res.columns.forEach((column: any) => {
+        if (column.dataIndex == res?.rowDetail) {
+          column.render = (_: any, record: any) => (
+            <Link to={res?.detailPath + record[schema.rowKey]}>{_}</Link>
+          );
+        }
+      });
       if (res.options.columns?.length > 0) {
         res.columns.push({
           title: '操作',
@@ -277,14 +284,16 @@ const BasicTable: React.FC = () => {
       }
       setSchema(res);
       // 读取操作表单
-      res.options.columns.forEach((option: any) => {
-        if (option.type == 'modal') {
-          getFormilySchema('form', option.key).then((sres) => {
-            formSchema[option.key] = sres;
-            setFormSchema(formSchema);
-          });
-        }
-      });
+      [...res.options.columns, ...res.options.toolbar, ...res.options.batch].forEach(
+        (option: any) => {
+          if (option.type == 'modal') {
+            getFormilySchema('form', option.key).then((sres) => {
+              formSchema[option.key] = sres;
+              setFormSchema(formSchema);
+            });
+          }
+        },
+      );
     });
     getFormilySchema('table', routeParams.table).then((res) => {
       setFormilyJson(res);
