@@ -40,8 +40,24 @@ yarn lint:fix
 
 ### 管理操作
 
-### 菜单管理
+#### 菜单管理
 
 | 规范 | 类型           | 访问路由     |
 | ---- | -------------- | ------------ |
 | CRUD | 表格列表及操作 | /crud/:table |
+
+#### 表格管理
+
+##### 表格属性
+
+```json
+{
+  "rowKey": "id",
+  "rowDetail": "name",
+  "detailPath": "/product/brand/"
+}
+```
+
+- rowKey 主键（必填）
+- rowDetail 详情链接的列名
+- detailPath 详情链接的路径
