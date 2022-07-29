@@ -335,8 +335,19 @@ const ColForm: React.FC = () => {
                 >
                   <SchemaField.Void x-component="Editable.Popover" name="void_table" title="列表">
                     <SchemaField.String
+                      name="width"
+                      title="列表宽度"
+                      x-decorator="FormItem"
+                      x-component="NumberPicker"
+                      x-component-props={{
+                        style: {
+                          width: 80,
+                        },
+                      }}
+                    />
+                    <SchemaField.String
                       name="col_size"
-                      title="占用格数"
+                      title="查询格数"
                       x-decorator="FormItem"
                       x-component="NumberPicker"
                       x-component-props={{
@@ -368,6 +379,28 @@ const ColForm: React.FC = () => {
                       title="支持复制"
                       x-decorator="FormItem"
                       x-component="Switch"
+                    />
+                    <SchemaField.String
+                      name="template_text"
+                      title="文本模板"
+                      x-decorator="FormItem"
+                      x-component="Input"
+                      x-component-props={{
+                        style: {
+                          width: 180,
+                        },
+                      }}
+                    />
+                    <SchemaField.String
+                      name="template_link_to"
+                      title="跳转模板"
+                      x-decorator="FormItem"
+                      x-component="Input"
+                      x-component-props={{
+                        style: {
+                          width: 180,
+                        },
+                      }}
                     />
                   </SchemaField.Void>
                   <SchemaField.Void x-component="Editable.Popover" name="void_form" title="编辑">
@@ -475,12 +508,7 @@ const ColForm: React.FC = () => {
                         { label: 'DELETE', value: 'DELETE' },
                       ]}
                     />
-                    <SchemaField.String
-                      name="path"
-                      x-decorator="FormItem"
-                      x-decorator-props={{ gridSpan: 3 }}
-                      x-component="Input"
-                    />
+                    <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
                   </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void
@@ -573,12 +601,7 @@ const ColForm: React.FC = () => {
                         { label: 'DELETE', value: 'DELETE' },
                       ]}
                     />
-                    <SchemaField.String
-                      name="path"
-                      x-decorator="FormItem"
-                      x-decorator-props={{ gridSpan: 3 }}
-                      x-component="Input"
-                    />
+                    <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
                   </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void
@@ -671,12 +694,7 @@ const ColForm: React.FC = () => {
                         { label: 'DELETE', value: 'DELETE' },
                       ]}
                     />
-                    <SchemaField.String
-                      name="path"
-                      x-decorator="FormItem"
-                      x-decorator-props={{ gridSpan: 3 }}
-                      x-component="Input"
-                    />
+                    <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
                   </SchemaField.Void>
                 </SchemaField.Void>
                 <SchemaField.Void

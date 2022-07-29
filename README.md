@@ -52,12 +52,27 @@ yarn lint:fix
 
 ```json
 {
-  "rowKey": "id",
-  "rowDetail": "name",
-  "detailPath": "/product/brand/"
+  "rowKey": "id"
 }
 ```
 
 - rowKey 主键（必填）
-- rowDetail 详情链接的列名
-- detailPath 详情链接的路径
+- 更多参考 ProTable 文档
+
+##### 列
+
+- 设置 列 文本模板
+
+示例：
+
+name 列表扩展 文本模板 设为 {{id}}.{{name}}
+
+id = 1 的 name 列 渲染 为 路由跳转 到 1.test
+
+- 设置 列 跳转模板
+
+示例：
+
+name 列表扩展 跳转模板 设为 /product/brand/{{id}}
+
+id = 1 的 name 列 渲染 为 路由跳转 到 /product/brand/1

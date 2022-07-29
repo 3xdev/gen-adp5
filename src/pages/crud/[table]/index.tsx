@@ -17,6 +17,7 @@ import type { RouteParams, TableSchema, TableOption, TableItem } from './data.d'
 import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
 import { getList, getItem, updateItem, addItem, removeItem, restItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
+const Mustache = require('mustache');
 
 /**
  * 添加
@@ -254,10 +255,17 @@ const BasicTable: React.FC = () => {
   useEffect(() => {
     getProTableSchema(routeParams.table).then((res) => {
       res.columns.forEach((column: any) => {
-        if (column.dataIndex == res?.rowDetail) {
-          column.render = (_: any, record: any) => (
-            <Link to={res?.detailPath + record[schema.rowKey]}>{_}</Link>
-          );
+        if (column?.templateText || column?.templateLinkTo) {
+          column.render = (_: any, record: any) =>
+            column?.templateLinkTo ? (
+              <Link to={Mustache.render(column.templateLinkTo, record)}>
+                {column?.templateText ? Mustache.render(column.templateText, record) : _}
+              </Link>
+            ) : column?.templateText ? (
+              Mustache.render(column.templateText, record)
+            ) : (
+              _
+            );
         }
       });
       if (res.options.columns?.length > 0) {
