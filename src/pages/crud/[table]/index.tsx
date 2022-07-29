@@ -1,11 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable default-case */
 import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
-import { Button, message, Drawer, Popconfirm, Image } from 'antd';
+import { Space, Button, message, Drawer, Popconfirm, Image } from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useUpdateEffect } from 'ahooks';
 import { history, useParams, Link } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProProvider from '@ant-design/pro-provider';
 import type { ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -95,7 +95,6 @@ const BasicTable: React.FC = () => {
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
-  const [selectedRows, setSelectedRows] = useState<TableItem[]>([]);
   const responseRows = useRef<TableItem[]>([]);
 
   const handleList = async (params: any, sorter: any, filter: any) => {
@@ -147,7 +146,6 @@ const BasicTable: React.FC = () => {
       case 'request':
         _handle = async () => {
           await restItem(option.method, option.path + '/' + record[schema.rowKey], option.body);
-          setSelectedRows([]);
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -207,48 +205,46 @@ const BasicTable: React.FC = () => {
     );
   };
 
-  const renderBatchOptions = (table: string, option: any) => {
+  const renderBatchOptions = (table: string, option: any, { selectedRowKeys }: any) => {
     let _handle = () => {};
     switch (option.type) {
       case 'bdelete':
         _handle = async () => {
-          await handleRemove(table, selectedRows.map((row) => row[schema.rowKey]).join(','));
-          setSelectedRows([]);
+          await handleRemove(table, selectedRowKeys.join(','));
           actionRef.current?.reloadAndRest?.();
         };
         break;
       case 'modal':
         _handle = () => {
-          setFormilyValues({ ids: selectedRows.map((row) => row[schema.rowKey]).join(',') });
+          setFormilyValues({ ids: selectedRowKeys.join(',') });
           setShowModalForm(true);
           setTableOption(option);
         };
         break;
       case 'page':
         _handle = () => {
-          history.push(option.path + '/' + selectedRows.map((row) => row[schema.rowKey]).join(','));
+          history.push(option.path + '/' + selectedRowKeys.join(','));
         };
         break;
       case 'request':
         _handle = async () => {
-          await restItem(
-            option.method,
-            option.path + '/' + selectedRows.map((row) => row[schema.rowKey]).join(','),
-            option.body,
-          );
-          setSelectedRows([]);
+          await restItem(option.method, option.path + '/' + selectedRowKeys.join(','), option.body);
           actionRef.current?.reloadAndRest?.();
         };
         break;
     }
-    return ['bdelete', 'request'].includes(option.type) ? (
-      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
-        <Button>{option.title}</Button>
-      </Popconfirm>
+    return selectedRowKeys.length > 0 ? (
+      ['bdelete', 'request'].includes(option.type) ? (
+        <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
+          <Button>{option.title}</Button>
+        </Popconfirm>
+      ) : (
+        <Button key={option.key} onClick={_handle}>
+          {option.title}
+        </Button>
+      )
     ) : (
-      <Button key={option.key} onClick={_handle}>
-        {option.title}
-      </Button>
+      <Button disabled>{option.title}</Button>
     );
   };
 
@@ -285,9 +281,16 @@ const BasicTable: React.FC = () => {
       }
       if (res.options.batch?.length > 0) {
         res.rowSelection = {
-          onChange: (_: any, rows: any) => {
-            setSelectedRows(rows);
-          },
+          alwaysShowAlert: true,
+        };
+        res.tableAlertOptionRender = ({ selectedRowKeys }: any) => {
+          return (
+            <Space size={12}>
+              {res.options.batch.map((option: any) =>
+                renderBatchOptions(routeParams.table, option, { selectedRowKeys }),
+              )}
+            </Space>
+          );
         };
       }
       setSchema(res);
@@ -343,19 +346,6 @@ const BasicTable: React.FC = () => {
           request={(params, sorter, filter) => handleList(params, sorter, filter)}
           {...schema}
         />
-        {selectedRows?.length > 0 && (
-          <FooterToolbar
-            extra={
-              <div>
-                已选择 <a style={{ fontWeight: 600 }}>{selectedRows.length}</a> 项
-              </div>
-            }
-          >
-            {schema.options.batch.map((option: any) =>
-              renderBatchOptions(routeParams.table, option),
-            )}
-          </FooterToolbar>
-        )}
 
         <UpdateForm
           onSubmit={async (value) => {
