@@ -57,6 +57,7 @@
     "@formily/antd": "^2.0.14",
     "@formily/core": "^2.0.14",
     "@formily/react": "^2.0.14",
+    "@types/mustache": "^4.2.1",
     "@umijs/route-utils": "^2.0.0",
     "ahooks": "^3.1.13",
     "antd": "^4.17.0",
