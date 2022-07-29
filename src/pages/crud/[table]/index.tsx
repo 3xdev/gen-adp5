@@ -17,7 +17,7 @@ import type { RouteParams, TableSchema, TableOption, TableItem } from './data.d'
 import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
 import { getList, getItem, updateItem, addItem, removeItem, restItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
-const Mustache = require('mustache');
+import Mustache from 'mustache';
 
 /**
  * 添加
