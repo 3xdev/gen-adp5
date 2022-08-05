@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import React, { useMemo, useState, useEffect } from 'react';
 import { history, useParams } from 'umi';
 import { createForm } from '@formily/core';
@@ -117,6 +116,7 @@ const ColForm: React.FC = () => {
           const rels: any = [
             { value: 'dict', label: '字典', children: [] },
             { value: 'table', label: '表格', children: [] },
+            { value: 'suggest', label: '搜索', children: [] },
           ];
           getDicts('common_status').then((res) => {
             form.setFieldState('status', { dataSource: res.items });
@@ -134,17 +134,16 @@ const ColForm: React.FC = () => {
             form.setFieldState('options.batch.*.type', { dataSource: res.items });
           });
           allDicts().then((res) => {
-            const items: any = [];
             res.data.forEach((item: any) => {
               rels[0].children.push({ value: item.key_, label: item.label });
             });
-            form.setFieldState('cols.*.value_enum_rel', { dataSource: items });
-          });
-          allTables().then((res) => {
-            res.data.forEach((item: any) => {
-              rels[1].children.push({ value: item.code, label: item.name });
+            allTables().then((tres) => {
+              tres.data.forEach((item: any) => {
+                rels[1].children.push({ value: item.code, label: item.name });
+                rels[2].children.push({ value: item.code, label: item.name });
+              });
+              form.setFieldState('cols.*.value_enum_rel', { dataSource: rels });
             });
-            form.setFieldState('cols.*.value_enum_rel', { dataSource: rels });
           });
         },
       }),

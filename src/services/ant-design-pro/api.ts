@@ -65,6 +65,11 @@ export async function getMenus() {
   });
 }
 
+/** 获取suggest */
+export async function getSuggest(table: string, keyword: string) {
+  return request(`/api/admin/suggest/${table}?keyword=${keyword}`);
+}
+
 /** 获取schema */
 export async function getProTableSchema(table: string) {
   return request(`/api/admin/schema/protable/${table}`);
