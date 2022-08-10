@@ -76,3 +76,19 @@ id = 1 的 name 列 渲染 为 路由跳转 到 1.test
 name 列表扩展 跳转模板 设为 /product/brand/{{id}}
 
 id = 1 的 name 列 渲染 为 路由跳转 到 /product/brand/1
+
+- 设置 列 编辑扩展（组件属性）
+
+[Formily Ant Design](https://antd.formilyjs.org/zh-CN/components)
+
+- 设置 列 编辑扩展（容器属性）
+
+[Formily Ant Design](https://antd.formilyjs.org/zh-CN/components)
+
+- 设置 列 编辑扩展（联动）
+
+[Schema 联动协议](https://react.formilyjs.org/zh-CN/api/shared/schema#schemareactions)
+
+- 设置 列 编辑扩展（验证）
+
+[字段校验器](https://core.formilyjs.org/zh-CN/api/models/field#fieldvalidator)

@@ -410,8 +410,26 @@ const ColForm: React.FC = () => {
                       x-component="Input"
                     />
                     <SchemaField.String
+                      name="component_props"
+                      title="组件属性"
+                      x-decorator="FormItem"
+                      x-component="Input.TextArea"
+                    />
+                    <SchemaField.String
+                      name="decorator_props"
+                      title="容器属性"
+                      x-decorator="FormItem"
+                      x-component="Input.TextArea"
+                    />
+                    <SchemaField.String
                       name="reactions"
                       title="联动"
+                      x-decorator="FormItem"
+                      x-component="Input.TextArea"
+                    />
+                    <SchemaField.String
+                      name="validator"
+                      title="验证"
                       x-decorator="FormItem"
                       x-component="Input.TextArea"
                     />
