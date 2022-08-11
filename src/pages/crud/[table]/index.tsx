@@ -323,11 +323,11 @@ const BasicTable: React.FC = () => {
           ...provider,
           valueTypeMap: {
             customImages: {
-              render: (text) => {
-                return text ? (
+              render: (files) => {
+                return files && files.length > 0 ? (
                   <Image.PreviewGroup>
-                    {text.split(',').map((item: string) => (
-                      <Image width={32} key={item} src={item} />
+                    {files.map((file: string) => (
+                      <Image width={36} key={file} src={file} />
                     ))}
                   </Image.PreviewGroup>
                 ) : (

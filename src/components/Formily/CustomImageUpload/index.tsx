@@ -24,8 +24,8 @@ const normalizeFileList = (fileList: any[]) => {
   }
   return [];
 };
-const buildFileList = (fileString: string) => {
-  return fileString.split(',').map((file, index) => {
+const buildFileList = (files: string[]) => {
+  return files.map((file, index) => {
     return {
       uid: `rc-upload-${index}`,
       status: 'done',
@@ -38,8 +38,7 @@ function useUploadProps(props: any) {
     props.onChange(
       normalizeFileList(param.fileList)
         .filter((file: any) => file.status === 'done')
-        .map((file: any) => file.url)
-        .join(','),
+        .map((file: any) => file.url),
     );
   };
   return {
