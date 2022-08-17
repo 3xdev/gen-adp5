@@ -1,4 +1,5 @@
 import { request } from 'umi';
+import Mustache from 'mustache';
 
 export async function getList(table: string, params?: Record<string, any>) {
   return request(`/api/admin/crud/${table}`, {
@@ -30,8 +31,13 @@ export async function updateItem(table: string, params: Record<string, any>) {
   });
 }
 
-export async function restItem(method: string, path: string, params: Record<string, any>) {
-  return request(path, {
+export async function restItem(
+  method: string,
+  url: string,
+  ids: string,
+  params: Record<string, any>,
+) {
+  return request(Mustache.render(url, { ids: ids }), {
     method: method,
     data: params,
   });

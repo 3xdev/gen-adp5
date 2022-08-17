@@ -92,3 +92,13 @@ id = 1 的 name 列 渲染 为 路由跳转 到 /product/brand/1
 - 设置 列 编辑扩展（验证）
 
 [字段校验器](https://core.formilyjs.org/zh-CN/api/models/field#fieldvalidator)
+
+##### 操作
+
+- 添加 操作 类型 表单弹窗
+
+操作名：表单处理对应控制器代码中的方法名 表单/页面：关联表单代码
+
+- 添加 操作 类型 跳转页面
+
+表单/页面：前端路由地址（示例：/user/{{user_id}}）

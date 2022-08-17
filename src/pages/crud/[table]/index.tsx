@@ -82,8 +82,9 @@ const BasicTable: React.FC = () => {
     type: '',
     key: '',
     title: '',
-    method: '',
     path: '',
+    request: {},
+    body: {},
   });
   const [formSchema, setFormSchema] = useState([{}]);
   const [formilyJson, setFormilyJson] = useState({});
@@ -140,12 +141,17 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(option.path + '/' + record[schema.rowKey]);
+          history.push(Mustache.render(option.path, { ...record, ids: record[schema.rowKey] }));
         };
         break;
       case 'request':
         _handle = async () => {
-          await restItem(option.method, option.path + '/' + record[schema.rowKey], option.body);
+          await restItem(
+            option.request.method,
+            option.request.url,
+            record[schema.rowKey],
+            option.body,
+          );
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -153,7 +159,7 @@ const BasicTable: React.FC = () => {
 
     return ['delete', 'request'].includes(option.type) ? (
       <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
-        <a>{option.title}</a>
+        <a key={option.key}>{option.title}</a>
       </Popconfirm>
     ) : (
       <a key={option.key} onClick={_handle}>
@@ -188,17 +194,23 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(option.path);
+          history.push(Mustache.render(option.path, {}));
         };
         break;
       case 'request':
         _handle = async () => {
-          await restItem(option.method, option.path + '/0', option.body);
+          await restItem(option.request.method, option.request.url, '0', option?.body);
           actionRef.current?.reloadAndRest?.();
         };
         break;
     }
-    return (
+    return ['request'].includes(option.type) ? (
+      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <Button key={option.key}>
+          {_icon} {option.title}
+        </Button>
+      </Popconfirm>
+    ) : (
       <Button type="primary" key={option.key} onClick={_handle}>
         {_icon} {option.title}
       </Button>
@@ -223,12 +235,17 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(option.path + '/' + selectedRowKeys.join(','));
+          history.push(Mustache.render(option.path, { ids: selectedRowKeys.join(',') }));
         };
         break;
       case 'request':
         _handle = async () => {
-          await restItem(option.method, option.path + '/' + selectedRowKeys.join(','), option.body);
+          await restItem(
+            option.request.method,
+            option.request.url,
+            selectedRowKeys.join(','),
+            option.body,
+          );
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -236,7 +253,7 @@ const BasicTable: React.FC = () => {
     return selectedRowKeys.length > 0 ? (
       ['bdelete', 'request'].includes(option.type) ? (
         <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
-          <Button>{option.title}</Button>
+          <Button key={option.key}>{option.title}</Button>
         </Popconfirm>
       ) : (
         <Button key={option.key} onClick={_handle}>
@@ -298,8 +315,8 @@ const BasicTable: React.FC = () => {
       [...res.options.columns, ...res.options.toolbar, ...res.options.batch].forEach(
         (option: any) => {
           if (option.type == 'modal') {
-            getFormilySchema('form', option.key).then((sres) => {
-              formSchema[option.key] = sres;
+            getFormilySchema('form', option.path).then((sres) => {
+              formSchema[option.path] = sres;
               setFormSchema(formSchema);
             });
           }
@@ -369,8 +386,9 @@ const BasicTable: React.FC = () => {
         <ModalForm
           onSubmit={async (value) => {
             const success = await restItem(
-              tableOption.method,
-              `${tableOption.path}/${value.ids ? value.ids : value.id}`,
+              tableOption?.request?.method,
+              tableOption?.request?.url,
+              value.ids ?? value.id,
               value,
             );
             if (success) {
@@ -384,7 +402,7 @@ const BasicTable: React.FC = () => {
           }}
           updateModalVisible={showModalForm}
           title={tableOption.title}
-          schema={formSchema[tableOption.key]}
+          schema={formSchema[tableOption.path]}
           values={formilyValues}
         />
 

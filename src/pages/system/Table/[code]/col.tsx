@@ -512,21 +512,9 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '接口/路径' }}
+                  x-component-props={{ title: '表单/页面' }}
                 >
-                  <SchemaField.Void x-component="FormGrid">
-                    <SchemaField.Markup
-                      name="method"
-                      x-decorator="FormItem"
-                      x-component="Select"
-                      enum={[
-                        { label: 'PUT', value: 'PUT' },
-                        { label: 'POST', value: 'POST' },
-                        { label: 'DELETE', value: 'DELETE' },
-                      ]}
-                    />
-                    <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
-                  </SchemaField.Void>
+                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -605,21 +593,9 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '接口/路径' }}
+                  x-component-props={{ title: '表单/页面' }}
                 >
-                  <SchemaField.Void x-component="FormGrid">
-                    <SchemaField.Markup
-                      name="method"
-                      x-decorator="FormItem"
-                      x-component="Select"
-                      enum={[
-                        { label: 'PUT', value: 'PUT' },
-                        { label: 'POST', value: 'POST' },
-                        { label: 'DELETE', value: 'DELETE' },
-                      ]}
-                    />
-                    <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
-                  </SchemaField.Void>
+                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -698,21 +674,9 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '接口/路径' }}
+                  x-component-props={{ title: '表单/页面' }}
                 >
-                  <SchemaField.Void x-component="FormGrid">
-                    <SchemaField.Markup
-                      name="method"
-                      x-decorator="FormItem"
-                      x-component="Select"
-                      enum={[
-                        { label: 'PUT', value: 'PUT' },
-                        { label: 'POST', value: 'POST' },
-                        { label: 'DELETE', value: 'DELETE' },
-                      ]}
-                    />
-                    <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
-                  </SchemaField.Void>
+                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"

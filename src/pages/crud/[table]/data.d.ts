@@ -12,8 +12,9 @@ export interface TableOption {
   type: string;
   key: string;
   title: string;
-  method: string;
   path: string;
+  request?: Record<string, any>;
+  body?: Record<string, any>;
 }
 
 export type TableItem = Record<string, any>;
