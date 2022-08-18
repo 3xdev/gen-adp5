@@ -36,9 +36,13 @@ const buildFileList = (files: string[]) => {
 function useUploadProps(props: any) {
   const onChange = (param: any) => {
     props.onChange(
-      normalizeFileList(param.fileList)
-        .filter((file: any) => file.status === 'done')
-        .map((file: any) => file.url),
+      props.multiple
+        ? normalizeFileList(param.fileList)
+            .filter((file: any) => file.status === 'done')
+            .map((file: any) => file.url)
+        : param.fileList && param.fileList.length
+        ? getURL(param.fileList[0]) || getURL(param.fileList[0]?.response)
+        : '',
     );
   };
   return {
@@ -46,7 +50,7 @@ function useUploadProps(props: any) {
     action: '/api/admin/upload/image/img',
     accept: 'image/*',
     listType: 'picture-card',
-    defaultFileList: props.value ? buildFileList(props.value) : [],
+    defaultFileList: props.value ? buildFileList(props.multiple ? props.value : [props.value]) : [],
     onChange,
   };
 }

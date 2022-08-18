@@ -493,7 +493,7 @@ const ColForm: React.FC = () => {
                   x-component-props={{ title: '操作名' }}
                 >
                   <SchemaField.String
-                    name="key"
+                    name="action"
                     x-decorator="FormItem"
                     x-component="Input"
                     required
@@ -514,7 +514,7 @@ const ColForm: React.FC = () => {
                   x-component="ArrayTable.Column"
                   x-component-props={{ title: '表单/页面' }}
                 >
-                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
+                  <SchemaField.String name="target" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -574,7 +574,7 @@ const ColForm: React.FC = () => {
                   x-component-props={{ title: '操作名' }}
                 >
                   <SchemaField.String
-                    name="key"
+                    name="action"
                     x-decorator="FormItem"
                     x-component="Input"
                     required
@@ -595,7 +595,7 @@ const ColForm: React.FC = () => {
                   x-component="ArrayTable.Column"
                   x-component-props={{ title: '表单/页面' }}
                 >
-                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
+                  <SchemaField.String name="target" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
@@ -655,7 +655,7 @@ const ColForm: React.FC = () => {
                   x-component-props={{ title: '操作名' }}
                 >
                   <SchemaField.String
-                    name="key"
+                    name="action"
                     x-decorator="FormItem"
                     x-component="Input"
                     required
@@ -676,7 +676,7 @@ const ColForm: React.FC = () => {
                   x-component="ArrayTable.Column"
                   x-component-props={{ title: '表单/页面' }}
                 >
-                  <SchemaField.String name="path" x-decorator="FormItem" x-component="Input" />
+                  <SchemaField.String name="target" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"

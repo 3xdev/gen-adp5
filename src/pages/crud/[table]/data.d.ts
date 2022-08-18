@@ -12,7 +12,7 @@ export interface TableOption {
   type: string;
   key: string;
   title: string;
-  path: string;
+  target: string;
   request?: Record<string, any>;
   body?: Record<string, any>;
 }

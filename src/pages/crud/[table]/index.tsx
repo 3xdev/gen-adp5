@@ -82,7 +82,7 @@ const BasicTable: React.FC = () => {
     type: '',
     key: '',
     title: '',
-    path: '',
+    target: '',
     request: {},
     body: {},
   });
@@ -141,7 +141,7 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(Mustache.render(option.path, { ...record, ids: record[schema.rowKey] }));
+          history.push(Mustache.render(option.target, { ...record, ids: record[schema.rowKey] }));
         };
         break;
       case 'request':
@@ -158,11 +158,11 @@ const BasicTable: React.FC = () => {
     }
 
     return ['delete', 'request'].includes(option.type) ? (
-      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
-        <a key={option.key}>{option.title}</a>
+      <Popconfirm key={option.action} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <a key={option.action}>{option.title}</a>
       </Popconfirm>
     ) : (
-      <a key={option.key} onClick={_handle}>
+      <a key={option.action} onClick={_handle}>
         {option.title}
       </a>
     );
@@ -194,7 +194,7 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(Mustache.render(option.path, {}));
+          history.push(Mustache.render(option.target, {}));
         };
         break;
       case 'request':
@@ -205,13 +205,13 @@ const BasicTable: React.FC = () => {
         break;
     }
     return ['request'].includes(option.type) ? (
-      <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
-        <Button key={option.key}>
+      <Popconfirm key={option.action} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <Button key={option.action}>
           {_icon} {option.title}
         </Button>
       </Popconfirm>
     ) : (
-      <Button type="primary" key={option.key} onClick={_handle}>
+      <Button type="primary" key={option.action} onClick={_handle}>
         {_icon} {option.title}
       </Button>
     );
@@ -235,7 +235,7 @@ const BasicTable: React.FC = () => {
         break;
       case 'page':
         _handle = () => {
-          history.push(Mustache.render(option.path, { ids: selectedRowKeys.join(',') }));
+          history.push(Mustache.render(option.target, { ids: selectedRowKeys.join(',') }));
         };
         break;
       case 'request':
@@ -250,18 +250,20 @@ const BasicTable: React.FC = () => {
         };
         break;
     }
-    return selectedRowKeys.length > 0 ? (
+    return selectedRowKeys.length ? (
       ['bdelete', 'request'].includes(option.type) ? (
-        <Popconfirm key={option.key} title={`确定${option.title}吗?`} onConfirm={_handle}>
-          <Button key={option.key}>{option.title}</Button>
+        <Popconfirm key={option.action} title={`确定${option.title}吗?`} onConfirm={_handle}>
+          <Button key={option.action}>{option.title}</Button>
         </Popconfirm>
       ) : (
-        <Button key={option.key} onClick={_handle}>
+        <Button key={option.action} onClick={_handle}>
           {option.title}
         </Button>
       )
     ) : (
-      <Button disabled>{option.title}</Button>
+      <Button key={option.action} disabled>
+        {option.title}
+      </Button>
     );
   };
 
@@ -281,7 +283,7 @@ const BasicTable: React.FC = () => {
             );
         }
       });
-      if (res.options.columns?.length > 0) {
+      if (res.options.columns?.length) {
         res.columns.push({
           title: '操作',
           dataIndex: 'option',
@@ -292,7 +294,7 @@ const BasicTable: React.FC = () => {
             ),
         });
       }
-      if (res.options.toolbar?.length > 0) {
+      if (res.options.toolbar?.length) {
         res.toolBarRender = () =>
           res.options.toolbar.map((option: any) => renderToolbarOptions(res.columns, option));
       }
@@ -315,8 +317,8 @@ const BasicTable: React.FC = () => {
       [...res.options.columns, ...res.options.toolbar, ...res.options.batch].forEach(
         (option: any) => {
           if (option.type == 'modal') {
-            getFormilySchema('form', option.path).then((sres) => {
-              formSchema[option.path] = sres;
+            getFormilySchema('form', option.target).then((sres) => {
+              formSchema[option.target] = sres;
               setFormSchema(formSchema);
             });
           }
@@ -402,7 +404,7 @@ const BasicTable: React.FC = () => {
           }}
           updateModalVisible={showModalForm}
           title={tableOption.title}
-          schema={formSchema[tableOption.path]}
+          schema={formSchema[tableOption.target]}
           values={formilyValues}
         />
 
