@@ -14,7 +14,7 @@ import ProDescriptions from '@ant-design/pro-descriptions';
 import UpdateForm from './components/UpdateForm';
 import ModalForm from './components/ModalForm';
 import type { RouteParams, TableSchema, TableOption, TableItem } from './data.d';
-import { getProTableSchema, getFormilySchema } from '@/services/ant-design-pro/api';
+import { getProTableSchema, getFormilySchema, getSuggest } from '@/services/ant-design-pro/api';
 import { getList, getItem, updateItem, addItem, removeItem, restItem } from './service';
 import ExportExcel from '@/components/ExportExcel';
 import Mustache from 'mustache';
@@ -270,6 +270,18 @@ const BasicTable: React.FC = () => {
   useEffect(() => {
     getProTableSchema(routeParams.table).then((res) => {
       res.columns.forEach((column: any) => {
+        if (column?.requestTable) {
+          column.request = async (search: any) => {
+            if (!search.keyWords) {
+              return [];
+            }
+            return new Promise((resolve) => {
+              getSuggest(column.requestTable, search.keyWords).then((sres) => {
+                resolve(sres.data);
+              });
+            });
+          };
+        }
         if (column?.templateText || column?.templateLinkTo) {
           column.render = (_: any, record: any) =>
             column?.templateLinkTo ? (
