@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable default-case */
-import { PlusOutlined, ExportOutlined } from '@ant-design/icons';
-import { Space, Button, message, Drawer, Popconfirm, Image } from 'antd';
+import { PlusOutlined, ExportOutlined, CloudDownloadOutlined } from '@ant-design/icons';
+import { Space, Button, message, Drawer, Popconfirm, Image, Tag } from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useUpdateEffect } from 'ahooks';
 import { history, useParams, Link } from 'umi';
@@ -361,6 +361,24 @@ const BasicTable: React.FC = () => {
                       <Image width={36} key={file} src={file} />
                     ))}
                   </Image.PreviewGroup>
+                ) : (
+                  <>-</>
+                );
+              },
+            },
+            customAttachments: {
+              render: (files) => {
+                return files && files.length > 0 ? (
+                  <>
+                    {files.map((file: string) => (
+                      <Tag
+                        icon={<CloudDownloadOutlined />}
+                        key={file.slice(file.lastIndexOf('/') + 1)}
+                      >
+                        {file.slice(file.lastIndexOf('/') + 1)}
+                      </Tag>
+                    ))}
+                  </>
                 ) : (
                   <>-</>
                 );

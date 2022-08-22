@@ -29,7 +29,7 @@ const buildFileList = (files: string[]) => {
     return {
       uid: `rc-upload-${index}`,
       status: 'done',
-      name: file.slice(file.lastIndexOf('/')),
+      name: file.slice(file.lastIndexOf('/') + 1),
       url: file,
     };
   });
