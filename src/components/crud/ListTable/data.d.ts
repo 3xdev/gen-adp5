@@ -1,5 +1,6 @@
-export interface RouteParams {
+export interface Props {
   table: string;
+  query?: Record<string, any>;
 }
 
 export interface TableSchema {
