@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable default-case */
 import { PlusOutlined, ExportOutlined, CloudDownloadOutlined } from '@ant-design/icons';
 import { Space, Button, message, Drawer, Popconfirm, Image, Tag } from 'antd';
 import React, { useState, useRef, useEffect, useContext } from 'react';
@@ -96,14 +94,14 @@ const ListTable: React.FC<Props> = (props) => {
   const responseRows = useRef<TableItem[]>([]);
 
   const handleList = async (params: any, sorter: any, filter: any) => {
-    const result = getList(props.table, { ...params, sorter, filter });
+    const result = getList(props.table, { ...params, ...props.query, sorter, filter });
     result.then((res) => {
       responseRows.current = res.data;
     });
     return result;
   };
 
-  const renderColumnsOptions = (table: string, option: any, record: any) => {
+  const renderColumnsOptions = (option: any, record: any) => {
     let _handle = () => {};
     switch (option.type) {
       case 'view':
@@ -122,7 +120,7 @@ const ListTable: React.FC<Props> = (props) => {
         break;
       case 'delete':
         _handle = async () => {
-          await handleRemove(table, record[schema.rowKey]);
+          await handleRemove(props.table, record[schema.rowKey]);
           setCurrentRow(undefined);
           actionRef.current?.reloadAndRest?.();
         };
@@ -130,7 +128,7 @@ const ListTable: React.FC<Props> = (props) => {
       case 'modal':
         _handle = async () => {
           getItem(props.table, record[schema.rowKey]).then((res) => {
-            setFormilyValues(res);
+            setFormilyValues({ ...res, ...props.query });
             setShowModalForm(true);
             setTableOption(option);
           });
@@ -165,13 +163,13 @@ const ListTable: React.FC<Props> = (props) => {
     );
   };
 
-  const renderToolbarOptions = (columns: any, option: any) => {
+  const renderToolbarOptions = (option: any, columns: any) => {
     let _handle = () => {};
     let _icon = <></>;
     switch (option.type) {
       case 'add':
         _handle = () => {
-          setFormilyValues({});
+          setFormilyValues(props.query);
           setShowUpdateForm(true);
         };
         _icon = <PlusOutlined />;
@@ -184,7 +182,7 @@ const ListTable: React.FC<Props> = (props) => {
         break;
       case 'modal':
         _handle = () => {
-          setFormilyValues({ ids: '0' });
+          setFormilyValues({ ids: '0', ...props.query });
           setShowModalForm(true);
           setTableOption(option);
         };
@@ -214,18 +212,18 @@ const ListTable: React.FC<Props> = (props) => {
     );
   };
 
-  const renderBatchOptions = (table: string, option: any, { selectedRowKeys }: any) => {
+  const renderBatchOptions = (option: any, { selectedRowKeys }: any) => {
     let _handle = () => {};
     switch (option.type) {
       case 'bdelete':
         _handle = async () => {
-          await handleRemove(table, selectedRowKeys.join(','));
+          await handleRemove(props.table, selectedRowKeys.join(','));
           actionRef.current?.reloadAndRest?.();
         };
         break;
       case 'modal':
         _handle = () => {
-          setFormilyValues({ ids: selectedRowKeys.join(',') });
+          setFormilyValues({ ids: selectedRowKeys.join(','), ...props.query });
           setShowModalForm(true);
           setTableOption(option);
         };
@@ -266,7 +264,15 @@ const ListTable: React.FC<Props> = (props) => {
 
   useEffect(() => {
     getProTableSchema(props.table).then((res) => {
+      if (props?.hiddenColumns) {
+        res.columns = res.columns.filter((column: any) => {
+          return !props.hiddenColumns?.includes(column.dataIndex?.toString());
+        });
+      }
       res.columns.forEach((column: any) => {
+        if (column?.sorter) {
+          column.key = props.table + '-' + column.dataIndex;
+        }
         if (column?.requestTable) {
           column.request = async (search: any) => {
             if (!search.keyWords) {
@@ -291,7 +297,13 @@ const ListTable: React.FC<Props> = (props) => {
               _
             );
         }
+        if (props?.renderColumns?.[column.dataIndex]) {
+          column.render = props.renderColumns?.[column.dataIndex];
+        }
       });
+      if (res.columns.every((column: any) => column?.hideInSearch)) {
+        res.search = false;
+      }
       if (res.options.columns?.length) {
         res.columns.push({
           title: '操作',
@@ -299,23 +311,34 @@ const ListTable: React.FC<Props> = (props) => {
           valueType: 'option',
           render: (_: any, record: any) =>
             res.options.columns.map((option: any) =>
-              renderColumnsOptions(props.table, option, record),
+              props?.renderColumnsOptions?.[option.action]
+                ? props?.renderColumnsOptions?.[option.action](option, record)
+                : renderColumnsOptions(option, record),
             ),
         });
       }
       if (res.options.toolbar?.length) {
         res.toolBarRender = () =>
-          res.options.toolbar.map((option: any) => renderToolbarOptions(res.columns, option));
+          res.options.toolbar.map((option: any) =>
+            props?.renderToolbarOptions?.[option.action]
+              ? props?.renderToolbarOptions?.[option.action](option, res.columns)
+              : renderToolbarOptions(option, res.columns),
+          );
       }
       if (res.options.batch?.length > 0) {
         res.rowSelection = {
           alwaysShowAlert: true,
         };
-        res.tableAlertOptionRender = ({ selectedRowKeys }: any) => {
+        res.tableAlertOptionRender = ({ selectedRowKeys, selectedRows }: any) => {
           return (
             <Space size={12}>
               {res.options.batch.map((option: any) =>
-                renderBatchOptions(props.table, option, { selectedRowKeys }),
+                props?.renderBatchOptions?.[option.action]
+                  ? props?.renderBatchOptions?.[option.action](option, {
+                      selectedRowKeys,
+                      selectedRows,
+                    })
+                  : renderBatchOptions(option, { selectedRowKeys, selectedRows }),
               )}
             </Space>
           );
@@ -341,8 +364,7 @@ const ListTable: React.FC<Props> = (props) => {
   }, [props.table]);
 
   useUpdateEffect(() => {
-    actionRef.current?.clearSelected?.();
-    actionRef.current?.reloadAndRest?.();
+    actionRef.current?.reset?.();
   }, [schema]);
 
   return (
@@ -386,11 +408,13 @@ const ListTable: React.FC<Props> = (props) => {
     >
       <ProTable<TableItem>
         actionRef={actionRef}
-        search={{
-          labelWidth: 120,
-        }}
         request={(params, sorter, filter) => handleList(params, sorter, filter)}
+        beforeSearchSubmit={(params: any) => {
+          actionRef.current?.clearSelected?.();
+          return params;
+        }}
         {...schema}
+        {...props.proTableProps}
       />
 
       <UpdateForm

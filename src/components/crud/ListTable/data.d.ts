@@ -1,6 +1,12 @@
 export interface Props {
   table: string;
   query?: Record<string, any>;
+  proTableProps?: Record<string, any>;
+  hiddenColumns?: string[];
+  renderColumns?: Record<string, any>;
+  renderColumnsOptions?: Record<string, any>;
+  renderToolbarOptions?: Record<string, any>;
+  renderBatchOptions?: Record<string, any>;
 }
 
 export interface TableSchema {
