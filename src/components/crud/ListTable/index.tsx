@@ -304,7 +304,9 @@ const ListTable: React.FC<Props> = (props) => {
       if (res.columns.every((column: any) => column?.hideInSearch)) {
         res.search = false;
       }
+      const forms = [];
       if (res.options.columns?.length) {
+        forms.push(...res.options.columns);
         res.columns.push({
           title: '操作',
           dataIndex: 'option',
@@ -318,6 +320,7 @@ const ListTable: React.FC<Props> = (props) => {
         });
       }
       if (res.options.toolbar?.length) {
+        forms.push(...res.options.toolbar);
         res.toolBarRender = () =>
           res.options.toolbar.map((option: any) =>
             props?.renderToolbarOptions?.[option.action]
@@ -326,6 +329,7 @@ const ListTable: React.FC<Props> = (props) => {
           );
       }
       if (res.options.batch?.length > 0) {
+        forms.push(...res.options.batch);
         res.rowSelection = {
           alwaysShowAlert: true,
         };
@@ -346,16 +350,14 @@ const ListTable: React.FC<Props> = (props) => {
       }
       setSchema(res);
       // 读取操作表单
-      [...res.options.columns, ...res.options.toolbar, ...res.options.batch].forEach(
-        (option: any) => {
-          if (option.type == 'modal') {
-            getFormilySchema('form', option.target).then((sres) => {
-              formSchema[option.target] = sres;
-              setFormSchema(formSchema);
-            });
-          }
-        },
-      );
+      forms.forEach((option: any) => {
+        if (option.type == 'modal') {
+          getFormilySchema('form', option.target).then((sres) => {
+            formSchema[option.target] = sres;
+            setFormSchema(formSchema);
+          });
+        }
+      });
     });
     getFormilySchema('table', props.table).then((res) => {
       setFormilyJson(res);
