@@ -75,7 +75,7 @@ const ListTable: React.FC<Props> = (props) => {
   const [schema, setSchema] = useState<TableSchema>({ rowKey: 'id', options: [], columns: [] });
   const [tableOption, setTableOption] = useState<TableOption>({
     type: '',
-    key: '',
+    action: '',
     title: '',
     target: '',
     request: {},
@@ -153,11 +153,11 @@ const ListTable: React.FC<Props> = (props) => {
     }
 
     return ['delete', 'request'].includes(option.type) ? (
-      <Popconfirm key={option.action} title={`确定${option.title}吗?`} onConfirm={_handle}>
-        <a key={option.action}>{option.title}</a>
+      <Popconfirm key={option.title} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <a key={option.title}>{option.title}</a>
       </Popconfirm>
     ) : (
-      <a key={option.action} onClick={_handle}>
+      <a key={option.title} onClick={_handle}>
         {option.title}
       </a>
     );
@@ -200,13 +200,13 @@ const ListTable: React.FC<Props> = (props) => {
         break;
     }
     return ['request'].includes(option.type) ? (
-      <Popconfirm key={option.action} title={`确定${option.title}吗?`} onConfirm={_handle}>
-        <Button key={option.action}>
+      <Popconfirm key={option.title} title={`确定${option.title}吗?`} onConfirm={_handle}>
+        <Button key={option.title}>
           {_icon} {option.title}
         </Button>
       </Popconfirm>
     ) : (
-      <Button type="primary" key={option.action} onClick={_handle}>
+      <Button type="primary" key={option.title} onClick={_handle}>
         {_icon} {option.title}
       </Button>
     );
@@ -247,16 +247,16 @@ const ListTable: React.FC<Props> = (props) => {
     }
     return selectedRowKeys.length ? (
       ['bdelete', 'request'].includes(option.type) ? (
-        <Popconfirm key={option.action} title={`确定${option.title}吗?`} onConfirm={_handle}>
-          <Button key={option.action}>{option.title}</Button>
+        <Popconfirm key={option.title} title={`确定${option.title}吗?`} onConfirm={_handle}>
+          <Button key={option.title}>{option.title}</Button>
         </Popconfirm>
       ) : (
-        <Button key={option.action} onClick={_handle}>
+        <Button key={option.title} onClick={_handle}>
           {option.title}
         </Button>
       )
     ) : (
-      <Button key={option.action} disabled>
+      <Button key={option.title} disabled>
         {option.title}
       </Button>
     );
@@ -268,6 +268,9 @@ const ListTable: React.FC<Props> = (props) => {
         res.columns = res.columns.filter((column: any) => {
           return !props.hiddenColumns?.includes(column.dataIndex?.toString());
         });
+      }
+      if (props?.appendColumns) {
+        res.columns.push(...props.appendColumns);
       }
       res.columns.forEach((column: any) => {
         if (column?.sorter) {
@@ -306,6 +309,9 @@ const ListTable: React.FC<Props> = (props) => {
       }
       const forms = [];
       if (res.options.columns?.length) {
+        if (props?.appendColumnsOptions) {
+          res.options.columns.push(...props.appendColumnsOptions);
+        }
         forms.push(...res.options.columns);
         res.columns.push({
           title: '操作',
@@ -320,6 +326,9 @@ const ListTable: React.FC<Props> = (props) => {
         });
       }
       if (res.options.toolbar?.length) {
+        if (props?.appendToolbarOptions) {
+          res.options.toolbar.push(...props.appendToolbarOptions);
+        }
         forms.push(...res.options.toolbar);
         res.toolBarRender = () =>
           res.options.toolbar.map((option: any) =>
@@ -329,6 +338,9 @@ const ListTable: React.FC<Props> = (props) => {
           );
       }
       if (res.options.batch?.length > 0) {
+        if (props?.appendBatchOptions) {
+          res.options.batch.push(...props.appendBatchOptions);
+        }
         forms.push(...res.options.batch);
         res.rowSelection = {
           alwaysShowAlert: true,
@@ -351,7 +363,7 @@ const ListTable: React.FC<Props> = (props) => {
       setSchema(res);
       // 读取操作表单
       forms.forEach((option: any) => {
-        if (option.type == 'modal') {
+        if (option?.type == 'modal') {
           getFormilySchema('form', option.target).then((sres) => {
             formSchema[option.target] = sres;
             setFormSchema(formSchema);

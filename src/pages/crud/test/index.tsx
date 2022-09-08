@@ -14,7 +14,7 @@ const BasicTable: React.FC = () => {
         proTableProps={{
           pagination: { showSizeChanger: true, pageSizeOptions: [10, 100, 1000] },
         }}
-        hiddenColumns={['content']}
+        hiddenColumns={['content', 'product_category,name']}
         renderColumns={{
           // 调用弹窗组件
           name: (text: any, record: any) => (
