@@ -76,7 +76,7 @@ const useSuggestDataSource = (
 
   onFieldReact(name, (field: IFieldState) => {
     field.loading = true;
-    service(table, keyword.value).then(
+    service(table, keyword.value || field.value).then(
       action.bound!((data) => {
         field.dataSource = data;
         field.loading = false;
