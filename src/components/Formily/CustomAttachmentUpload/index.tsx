@@ -1,4 +1,4 @@
-import { Upload as AntdUpload } from 'antd';
+import { Button, Upload as AntdUpload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { connect } from '@formily/react';
 
@@ -9,7 +9,7 @@ const getState = (target: any) => {
   return target?.state || target?.status;
 };
 const getURL = (target: any) => {
-  return target?.url || target?.downloadURL || target?.imgURL;
+  return target?.url || target?.downloadURL;
 };
 const normalizeFileList = (fileList: any[]) => {
   if (fileList && fileList.length) {
@@ -47,16 +47,16 @@ function useUploadProps(props: any) {
     );
   };
   return {
-    action: '/api/admin/upload/image/img',
-    accept: 'image/*',
-    listType: 'picture-card',
+    action: '/api/admin/upload/attachment/att',
+    accept: '*',
+    listType: 'text',
     ...props,
     defaultFileList: props.value ? buildFileList(props.multiple ? props.value : [props.value]) : [],
     onChange,
   };
 }
 
-const CustomImageUpload = connect((props: any) => {
+const CustomAttachmentUpload = connect((props: any) => {
   const token = localStorage.getItem('token') || '';
   return (
     <AntdUpload
@@ -65,9 +65,9 @@ const CustomImageUpload = connect((props: any) => {
         Authorization: `Bearer ${token}`,
       }}
     >
-      {props.children || <UploadOutlined style={{ fontSize: 20 }} />}
+      {props.children || <Button icon={<UploadOutlined />}>上传附件</Button>}
     </AntdUpload>
   );
 });
 
-export default CustomImageUpload;
+export default CustomAttachmentUpload;

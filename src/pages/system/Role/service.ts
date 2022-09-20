@@ -26,12 +26,16 @@ export async function updateItem(params: Record<string, any>) {
   });
 }
 
+export async function getTable() {
+  return request('/api/admin/system_role/table');
+}
+
 export async function getPermission(id: string) {
-  return request(`/api/admin/rest/system_role/permission/${id}`);
+  return request(`/api/admin/system_role/permission/${id}`);
 }
 
 export async function putPermission(id: string, params: Record<string, any>) {
-  return request(`/api/admin/rest/system_role/permission/${id}`, {
+  return request(`/api/admin/system_role/permission/${id}`, {
     method: 'PUT',
     data: params,
   });

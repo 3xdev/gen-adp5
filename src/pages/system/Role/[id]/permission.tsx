@@ -36,8 +36,7 @@ import {
 import { Button, message, Card, Slider, Rate } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import type { RouteParams, TableItem } from '../data.d';
-import { getPermission, putPermission } from '../service';
-import { allTables } from '@/services/ant-design-pro/api';
+import { getTable, getPermission, putPermission } from '../service';
 import { PageContainer } from '@ant-design/pro-layout';
 
 const Text: React.FC<{
@@ -95,7 +94,7 @@ const PForm: React.FC = () => {
       console.log(res);
       setValues(res);
     });
-    allTables().then((res) => {
+    getTable().then((res) => {
       setTables(res.data);
     });
   }, [routeParams.id]);
@@ -149,10 +148,7 @@ const PForm: React.FC = () => {
                   title={table.name}
                   x-decorator="FormItem"
                   x-component="Checkbox.Group"
-                  enum={[
-                    { label: '读', value: 'r' },
-                    { label: '写', value: 'w' },
-                  ]}
+                  enum={table.actions}
                   x-validator={[]}
                 />
               </>

@@ -1,5 +1,18 @@
-export interface RouteParams {
+import type { ProColumns } from '@ant-design/pro-table';
+
+export interface Props {
   table: string;
+  query?: Record<string, any>;
+  proTableProps?: Record<string, any>;
+  hiddenColumns?: string[];
+  appendColumns?: ProColumns[];
+  renderColumns?: Record<string, any>;
+  appendColumnsOptions?: Partial<TableOption>[];
+  renderColumnsOptions?: Record<string, any>;
+  appendToolbarOptions?: Partial<TableOption>[];
+  renderToolbarOptions?: Record<string, any>;
+  appendBatchOptions?: Partial<TableOption>[];
+  renderBatchOptions?: Record<string, any>;
 }
 
 export interface TableSchema {
@@ -10,10 +23,11 @@ export interface TableSchema {
 
 export interface TableOption {
   type: string;
-  key: string;
+  action: string;
   title: string;
-  method: string;
-  path: string;
+  target: string;
+  request?: Record<string, any>;
+  body?: Record<string, any>;
 }
 
 export type TableItem = Record<string, any>;
