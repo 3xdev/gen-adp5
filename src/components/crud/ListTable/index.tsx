@@ -438,6 +438,7 @@ const ListTable: React.FC<Props> = (props) => {
             : await handleAdd(props.table, value);
           if (success) {
             setShowUpdateForm(false);
+            setFormilyValues({});
             setCurrentRow(undefined);
             actionRef.current?.reload();
           }
@@ -460,6 +461,7 @@ const ListTable: React.FC<Props> = (props) => {
           );
           if (success) {
             setShowModalForm(false);
+            setFormilyValues({});
             setCurrentRow(undefined);
             actionRef.current?.reload();
           }
