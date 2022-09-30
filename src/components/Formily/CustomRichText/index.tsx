@@ -52,7 +52,7 @@ const CustomRichText = connect((props: any) => {
         contentStyle={{ height: 300 }}
         placeholder="请输入内容"
         value={editor}
-        media={{ uploadFn: handleUploadFn }}
+        media={{ uploadFn: handleUploadFn, onInsert: handleSave }}
         onChange={handleChange}
         onSave={handleSave}
         onBlur={handleSave}

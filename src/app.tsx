@@ -6,7 +6,11 @@ import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import type { ResponseError, RequestOptionsInit } from 'umi-request';
 import { history, Link } from 'umi';
 import RightContent from '@/components/RightContent';
-import { currentUser as queryCurrentUser, getMenus } from './services/ant-design-pro/api';
+import {
+  currentUser as queryCurrentUser,
+  getMenus,
+  getTables,
+} from './services/ant-design-pro/api';
 import {
   BookOutlined,
   CrownOutlined,
@@ -48,8 +52,10 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
+  currentUserTables?: string[];
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserTables?: () => Promise<string[]>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -59,17 +65,29 @@ export async function getInitialState(): Promise<{
     }
     return undefined;
   };
+  const fetchUserTables = async () => {
+    try {
+      return (await getTables()).data;
+    } catch (error) {
+      history.push(loginPath);
+    }
+    return [];
+  };
   // 如果是登录页面，不执行
   if (history.location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
+    const currentUserTables = await fetchUserTables();
     return {
       fetchUserInfo,
+      fetchUserTables,
       currentUser,
+      currentUserTables,
       settings: defaultSettings,
     };
   }
   return {
     fetchUserInfo,
+    fetchUserTables,
     settings: defaultSettings,
   };
 }

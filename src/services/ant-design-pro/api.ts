@@ -58,9 +58,16 @@ export async function getDicts(name: string) {
   });
 }
 
-/** 获取管理员菜单 */
+/** 获取管理员可访问菜单 */
 export async function getMenus() {
   return request('/api/admin/menus', {
+    method: 'GET',
+  });
+}
+
+/** 获取管理员可访问表格 */
+export async function getTables() {
+  return request('/api/admin/tables', {
     method: 'GET',
   });
 }

@@ -105,6 +105,32 @@ id = 1 的 name 列 渲染 为 路由跳转 到 /product/brand/1
 
 ### 开发
 
+#### 表格访问权限
+
+```typescript
+// 引入获取权限Hooks/权限控制组件
+import { useAccess, Access } from 'umi';
+
+// 获取权限集合
+const access = useAccess();
+
+// 方式1：通过判断权限展示
+{
+  access.canGetTable('order') ? (
+    <TabPane tab="订单记录" key="order">
+      ...
+    </TabPane>
+  ) : (
+    <></>
+  );
+}
+
+// 方式2：通过Access组件展示
+<Access accessible={access.canGetTable('order')} fallback={<div>Can not get content.</div>}>
+  ...
+</Access>;
+```
+
 #### crud ListTable 组件
 
 | 属性 | 描述 | 类型 | 默认值 |
