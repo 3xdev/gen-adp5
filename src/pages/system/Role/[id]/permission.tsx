@@ -110,7 +110,6 @@ const PForm: React.FC = () => {
   const handleUpdate = async (fields: Partial<TableItem>) => {
     const hide = message.loading('正在提交');
     try {
-      console.log(routeParams);
       await putPermission(routeParams.id, { ...fields });
       hide();
       message.success('提交成功');
@@ -129,27 +128,25 @@ const PForm: React.FC = () => {
             <SchemaField.Boolean
               name="all"
               title="全选"
-              x-decorator="FormItem"
               x-component="Checkbox"
-              x-reactions={{
-                target: '*(!all)',
-                effects: ['onFieldValueChange'],
-                fulfill: {
-                  state: {
-                    value: '{{$self.value ? ["r", "w"] : []}}',
-                  },
-                },
-              }}
+              x-decorator="FormItem"
             />
             {tables.map((table: any) => (
               <>
                 <SchemaField.Markup
                   name={table.code}
                   title={table.name}
-                  x-decorator="FormItem"
-                  x-component="Checkbox.Group"
                   enum={table.actions}
-                  x-validator={[]}
+                  x-component="Checkbox.Group"
+                  x-decorator="FormItem"
+                  x-reactions={{
+                    dependencies: ['all'],
+                    fulfill: {
+                      state: {
+                        value: '{{$deps[0] ? $self.dataSource.map(ds => ds.value) : []}}',
+                      },
+                    },
+                  }}
                 />
               </>
             ))}
