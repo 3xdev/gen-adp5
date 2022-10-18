@@ -18,10 +18,8 @@ const CustomRichText = connect((props: any) => {
       .catch(() => param.error({ msg: '上传失败！' }));
   };
   const handleChange = (editorState: any) => {
+    props.onChange(editorState.toHTML());
     setEditor(editorState);
-  };
-  const handleSave = () => {
-    props.onChange(editor ? editor.toHTML() : '');
   };
 
   return (
@@ -52,10 +50,8 @@ const CustomRichText = connect((props: any) => {
         contentStyle={{ height: 300 }}
         placeholder="请输入内容"
         value={editor}
-        media={{ uploadFn: handleUploadFn, onInsert: handleSave }}
+        media={{ uploadFn: handleUploadFn }}
         onChange={handleChange}
-        onSave={handleSave}
-        onBlur={handleSave}
       />
     </div>
   );
