@@ -73,8 +73,14 @@ export async function getTables() {
 }
 
 /** 获取suggest */
-export async function getSuggest(table: string, keyword: string) {
-  return request(`/api/admin/suggest/${table}?keyword=${keyword}`);
+export async function getSuggest(table: string, keyword: string, query?: Record<string, any>) {
+  return request(`/api/admin/suggest/${table}`, {
+    method: 'GET',
+    params: {
+      ...(query || {}),
+      keyword,
+    },
+  });
 }
 
 /** 获取schema */

@@ -48,12 +48,12 @@ const Text: React.FC<{
   return React.createElement(tagName, props, content);
 };
 
-const fetchSuggestData = async (table: string, keyword: string) => {
+const fetchSuggestData = async (table: string, keyword: string, query: Record<string, any>) => {
   if (!keyword) {
     return [];
   }
   return new Promise((resolve) => {
-    getSuggest(table, keyword).then((res) => {
+    getSuggest(table, keyword, query).then((res) => {
       resolve(res.data);
     });
   });
@@ -62,7 +62,12 @@ const fetchSuggestData = async (table: string, keyword: string) => {
 const useSuggestDataSource = (
   name: string,
   table: string,
-  service: (table: string, keyword: string) => Promise<{ label: string; value: any }[]>,
+  query: Record<string, any>,
+  service: (
+    table: string,
+    keyword: string,
+    query: Record<string, any>,
+  ) => Promise<{ label: string; value: any }[]>,
 ) => {
   const keyword = observable.ref('');
 
@@ -76,7 +81,7 @@ const useSuggestDataSource = (
 
   onFieldReact(name, (field: IFieldState) => {
     field.loading = true;
-    service(table, keyword.value || field.value).then(
+    service(table, keyword.value || field.value, query).then(
       action.bound!((data) => {
         field.dataSource = data;
         field.loading = false;
