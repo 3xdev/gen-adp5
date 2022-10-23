@@ -58,16 +58,29 @@ export async function getDicts(name: string) {
   });
 }
 
-/** 获取管理员菜单 */
+/** 获取管理员可访问菜单 */
 export async function getMenus() {
   return request('/api/admin/menus', {
     method: 'GET',
   });
 }
 
+/** 获取管理员可访问表格 */
+export async function getTables() {
+  return request('/api/admin/tables', {
+    method: 'GET',
+  });
+}
+
 /** 获取suggest */
-export async function getSuggest(table: string, keyword: string) {
-  return request(`/api/admin/suggest/${table}?keyword=${keyword}`);
+export async function getSuggest(table: string, keyword: string, query?: Record<string, any>) {
+  return request(`/api/admin/suggest/${table}`, {
+    method: 'GET',
+    params: {
+      ...(query || {}),
+      keyword,
+    },
+  });
 }
 
 /** 获取schema */
@@ -83,5 +96,18 @@ export async function getNotices(options?: { [key: string]: any }) {
   return request<API.NoticeIconList>('/api/admin/notices', {
     method: 'GET',
     ...(options || {}),
+  });
+}
+
+/** 上传图片 */
+export async function uploadImages(file: any) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return request(`/api/admin/upload/image/img`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    data: formData,
   });
 }

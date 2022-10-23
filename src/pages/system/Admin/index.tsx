@@ -119,8 +119,15 @@ const AdminTable: React.FC = () => {
       title: '角色',
       dataIndex: 'roles',
       valueEnum: { ...roles },
+      search: false,
+    },
+    {
+      title: '角色',
+      dataIndex: 'roles[]',
+      valueEnum: { ...roles },
       valueType: 'select',
       fieldProps: { mode: 'multiple' },
+      hideInTable: true,
     },
     {
       title: '密码',

@@ -3,6 +3,7 @@ import 'braft-editor/dist/index.css';
 import BraftEditor from 'braft-editor';
 import type { EditorState } from 'braft-editor';
 import { connect } from '@formily/react';
+import { uploadImages } from '@/services/ant-design-pro/api';
 
 const CustomRichText = connect((props: any) => {
   const [editor, setEditor] = useState<EditorState>(null);
@@ -11,11 +12,14 @@ const CustomRichText = connect((props: any) => {
       setEditor(BraftEditor.createEditorState(props.value));
     }
   }, [props.value]);
-  const handleChange = (editorState: any) => {
-    setEditor(editorState);
+  const handleUploadFn = (param: any) => {
+    uploadImages(param.file)
+      .then((res) => param.success({ url: res.url }))
+      .catch(() => param.error({ msg: '上传失败！' }));
   };
-  const handleSave = () => {
-    props.onChange(editor ? editor.toHTML() : '');
+  const handleChange = (editorState: any) => {
+    props.onChange(editorState.toHTML());
+    setEditor(editorState);
   };
 
   return (
@@ -46,9 +50,8 @@ const CustomRichText = connect((props: any) => {
         contentStyle={{ height: 300 }}
         placeholder="请输入内容"
         value={editor}
+        media={{ uploadFn: handleUploadFn }}
         onChange={handleChange}
-        onSave={handleSave}
-        onBlur={handleSave}
       />
     </div>
   );
