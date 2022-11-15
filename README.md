@@ -83,9 +83,22 @@ yarn lint:fix
   // 搜索下拉框 附加搜索器条件约束
   {
     "placeholder": "商品名称 \/ 商品编号",
-    "customQuery": {
+    "query": {
         "company_agent_id": 0
     }
+  }
+
+  // 自定义模型关联拾取 多选模式
+  {
+    "placeholder": "选取商品",
+    "mode": "multiple",
+    "query": {
+        "company_agent_id": 0
+    },
+    "modalWidth": 900,
+    "labelCol": "title",
+    "allowClear": true,
+    "visibleColumns": ["id", "no", "covers", "title", "price", "type"]
   }
   ```
 
@@ -190,10 +203,20 @@ const access = useAccess();
 | table | 表格代码 | string | - |
 | query | 附加查询条件 | Record<string, any> | - |
 | proTableProps | 透传 protable 属性 | Record<string, any> | - |
+| visibleColumns | 要展示列 | string[] | - |
 | hiddenColumns | 要隐藏列 | string[] | - |
+| appendColumns | 要追加列 | ProColumns[] | - |
 | renderColumns | 列展示的 render | (text: ReactNode,record: T) => ReactNode | ReactNode[] |
+| visibleSearch | 要展示搜索 | string[] | - |
+| hiddenSearch | 要隐藏搜索 | string[] | - |
+| visibleColumnsOptions | 要展示列操作 | string[] | - |
+| appendColumnsOptions | 要追加列操作 | TableOption[] | - |
 | renderColumnsOptions | 列操作的 render | (option: T,record: U) => ReactNode | ReactNode[] |
+| visibleToolbarOptions | 要展示工具栏 | string[] | - |
+| appendToolbarOptions | 要追加工具栏 | TableOption[] | - |
 | renderToolbarOptions | 工具栏的 render | (option: T,columns: U) => ReactNode | ReactNode[] |
+| visibleBatchOptions | 要展示批处理 | string[] | - |
+| appendBatchOptions | 要追加批处理 | TableOption[] | - |
 | renderBatchOptions | 批处理的 render | (option: T,{ selectedRowKeys: Key[], selectedRows: U[] }) => ReactNode | ReactNode[] |
 
 ```typescript
