@@ -7,6 +7,13 @@ export async function getList(table: string, params?: Record<string, any>) {
   });
 }
 
+export async function exportList(table: string, params?: Record<string, any>) {
+  return request(`/api/admin/export/${table}`, {
+    responseType: 'blob',
+    params,
+  });
+}
+
 export async function getItem(table: string, id: any) {
   return request(`/api/admin/crud/${table}/${id}`);
 }
