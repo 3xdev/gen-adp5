@@ -4,13 +4,19 @@ export interface Props {
   table: string;
   query?: Record<string, any>;
   proTableProps?: Record<string, any>;
+  visibleColumns?: string[];
   hiddenColumns?: string[];
   appendColumns?: ProColumns[];
   renderColumns?: Record<string, any>;
+  visibleSearch?: string[];
+  hiddenSearch?: string[];
+  visibleColumnsOptions?: string[];
   appendColumnsOptions?: Partial<TableOption>[];
   renderColumnsOptions?: Record<string, any>;
+  visibleToolbarOptions?: string[];
   appendToolbarOptions?: Partial<TableOption>[];
   renderToolbarOptions?: Record<string, any>;
+  visibleBatchOptions?: string[];
   appendBatchOptions?: Partial<TableOption>[];
   renderBatchOptions?: Record<string, any>;
 }

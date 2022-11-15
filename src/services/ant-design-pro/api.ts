@@ -83,6 +83,18 @@ export async function getSuggest(table: string, keyword: string, query?: Record<
   });
 }
 
+/** 获取enum */
+export async function getEnum(table: string, values: string, valueCol: string, labelCol: string) {
+  return request(`/api/admin/enum/${table}`, {
+    method: 'GET',
+    params: {
+      values,
+      valueCol,
+      labelCol,
+    },
+  });
+}
+
 /** 获取schema */
 export async function getProTableSchema(table: string) {
   return request(`/api/admin/schema/protable/${table}`);

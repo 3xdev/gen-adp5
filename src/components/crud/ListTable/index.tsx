@@ -12,8 +12,7 @@ import UpdateForm from './components/UpdateForm';
 import ModalForm from './components/ModalForm';
 import type { Props, TableSchema, TableOption, TableItem } from './data.d';
 import { getProTableSchema, getFormilySchema, getSuggest } from '@/services/ant-design-pro/api';
-import { getList, getItem, updateItem, addItem, removeItem, restItem } from './service';
-import ExportExcel from '@/components/ExportExcel';
+import { getList, exportList, getItem, updateItem, addItem, removeItem, restItem } from './service';
 import Mustache from 'mustache';
 
 /**
@@ -91,14 +90,11 @@ const ListTable: React.FC<Props> = (props) => {
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
-  const responseRows = useRef<TableItem[]>([]);
+  const listParams = useRef<TableItem>();
 
   const handleList = async (params: any, sorter: any, filter: any) => {
-    const result = getList(props.table, { ...params, ...props.query, sorter, filter });
-    result.then((res) => {
-      responseRows.current = res.data;
-    });
-    return result;
+    listParams.current = { ...params, ...props.query, sorter, filter };
+    return getList(props.table, { ...params, ...props.query, sorter, filter });
   };
 
   const renderColumnsOptions = (option: any, record: any) => {
@@ -163,7 +159,7 @@ const ListTable: React.FC<Props> = (props) => {
     );
   };
 
-  const renderToolbarOptions = (option: any, columns: any) => {
+  const renderToolbarOptions = (option: any) => {
     let _handle = () => {};
     let _icon = <></>;
     switch (option.type) {
@@ -176,7 +172,9 @@ const ListTable: React.FC<Props> = (props) => {
         break;
       case 'export':
         _handle = () => {
-          ExportExcel(columns, responseRows.current);
+          exportList(props.table, listParams.current).then((res) => {
+            window.open(window.URL.createObjectURL(res));
+          });
         };
         _icon = <ExportOutlined />;
         break;
@@ -264,6 +262,11 @@ const ListTable: React.FC<Props> = (props) => {
 
   useEffect(() => {
     getProTableSchema(props.table).then((res) => {
+      if (props?.visibleColumns) {
+        res.columns = res.columns.filter((column: any) => {
+          return props.visibleColumns?.includes(column.dataIndex?.toString());
+        });
+      }
       if (props?.hiddenColumns) {
         res.columns = res.columns.filter((column: any) => {
           return !props.hiddenColumns?.includes(column.dataIndex?.toString());
@@ -274,7 +277,19 @@ const ListTable: React.FC<Props> = (props) => {
       }
       res.columns.forEach((column: any) => {
         if (column?.sorter) {
-          column.key = props.table + '-' + column.dataIndex;
+          column.key = props.table + '-' + column.dataIndex?.toString();
+        }
+        if (props?.visibleSearch) {
+          if (props.visibleSearch?.includes(column.dataIndex?.toString())) {
+            column.hideInSearch = false;
+          } else {
+            column.hideInSearch = true;
+          }
+        }
+        if (props?.hiddenSearch) {
+          if (props.hiddenSearch?.includes(column.dataIndex?.toString())) {
+            column.hideInSearch = true;
+          }
         }
         if (column?.requestTable) {
           column.request = async (search: any) => {
@@ -309,56 +324,81 @@ const ListTable: React.FC<Props> = (props) => {
       }
       const forms = [];
       if (res.options.columns?.length) {
+        if (props?.visibleColumnsOptions) {
+          res.options.columns = res.options.columns.filter((option: any) => {
+            return props.visibleColumnsOptions?.includes(option.action);
+          });
+        }
         if (props?.appendColumnsOptions) {
           res.options.columns.push(...props.appendColumnsOptions);
         }
-        forms.push(...res.options.columns);
-        res.columns.push({
-          title: '操作',
-          dataIndex: 'option',
-          valueType: 'option',
-          render: (_: any, record: any) =>
-            res.options.columns.map((option: any) =>
-              props?.renderColumnsOptions?.[option.action]
-                ? props?.renderColumnsOptions?.[option.action](option, record)
-                : renderColumnsOptions(option, record),
+        if (res.options.columns.length > 0) {
+          forms.push(...res.options.columns);
+          res.columns.push({
+            title: '操作',
+            dataIndex: 'option',
+            valueType: 'option',
+            fixed: 'right',
+            render: (_: any, record: any) => (
+              <Space>
+                {res.options.columns.map((option: any) =>
+                  props?.renderColumnsOptions?.[option.action]
+                    ? props?.renderColumnsOptions?.[option.action](option, record)
+                    : renderColumnsOptions(option, record),
+                )}
+              </Space>
             ),
-        });
+          });
+        }
       }
       if (res.options.toolbar?.length) {
+        if (props?.visibleToolbarOptions) {
+          res.options.toolbar = res.options.toolbar.filter((option: any) => {
+            return props.visibleToolbarOptions?.includes(option.action);
+          });
+        }
         if (props?.appendToolbarOptions) {
           res.options.toolbar.push(...props.appendToolbarOptions);
         }
-        forms.push(...res.options.toolbar);
-        res.toolBarRender = () =>
-          res.options.toolbar.map((option: any) =>
-            props?.renderToolbarOptions?.[option.action]
-              ? props?.renderToolbarOptions?.[option.action](option, res.columns)
-              : renderToolbarOptions(option, res.columns),
-          );
+        if (res.options.toolbar.length > 0) {
+          forms.push(...res.options.toolbar);
+          res.toolBarRender = () =>
+            res.options.toolbar.map((option: any) =>
+              props?.renderToolbarOptions?.[option.action]
+                ? props?.renderToolbarOptions?.[option.action](option)
+                : renderToolbarOptions(option),
+            );
+        }
       }
-      if (res.options.batch?.length > 0) {
+      if (res.options.batch?.length) {
+        if (props?.visibleBatchOptions) {
+          res.options.batch = res.options.batch.filter((option: any) => {
+            return props.visibleBatchOptions?.includes(option.action);
+          });
+        }
         if (props?.appendBatchOptions) {
           res.options.batch.push(...props.appendBatchOptions);
         }
-        forms.push(...res.options.batch);
-        res.rowSelection = {
-          alwaysShowAlert: true,
-        };
-        res.tableAlertOptionRender = ({ selectedRowKeys, selectedRows }: any) => {
-          return (
-            <Space size={12}>
-              {res.options.batch.map((option: any) =>
-                props?.renderBatchOptions?.[option.action]
-                  ? props?.renderBatchOptions?.[option.action](option, {
-                      selectedRowKeys,
-                      selectedRows,
-                    })
-                  : renderBatchOptions(option, { selectedRowKeys, selectedRows }),
-              )}
-            </Space>
-          );
-        };
+        if (res.options.batch.length > 0) {
+          forms.push(...res.options.batch);
+          res.rowSelection = {
+            alwaysShowAlert: true,
+          };
+          res.tableAlertOptionRender = ({ selectedRowKeys, selectedRows }: any) => {
+            return (
+              <Space size={12}>
+                {res.options.batch.map((option: any) =>
+                  props?.renderBatchOptions?.[option.action]
+                    ? props?.renderBatchOptions?.[option.action](option, {
+                        selectedRowKeys,
+                        selectedRows,
+                      })
+                    : renderBatchOptions(option, { selectedRowKeys, selectedRows }),
+                )}
+              </Space>
+            );
+          };
+        }
       }
       setSchema(res);
       // 读取操作表单
@@ -477,7 +517,7 @@ const ListTable: React.FC<Props> = (props) => {
 
       <Drawer
         width={600}
-        visible={showDetail}
+        open={showDetail}
         onClose={() => {
           setCurrentRow(undefined);
           setShowDetail(false);

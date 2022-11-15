@@ -34,6 +34,8 @@ import {
 } from '@formily/antd';
 import { Card, Slider, Rate } from 'antd';
 import CustomImageUpload from '@/components/Formily/CustomImageUpload';
+import CustomAttachmentUpload from '@/components/Formily/CustomAttachmentUpload';
+
 import CustomRichText from '@/components/Formily/CustomRichText';
 
 const Text: React.FC<{
@@ -77,6 +79,7 @@ const SchemaField = createSchemaField({
     Slider,
     Rate,
     CustomImageUpload,
+    CustomAttachmentUpload,
     CustomRichText,
   },
 });
@@ -105,7 +108,7 @@ const ModalForm: React.FC<ModalFormProps> = (props) => {
       destroyOnClose
       title={title}
       width={800}
-      visible={updateModalVisible}
+      open={updateModalVisible}
       onCancel={() => onCancel()}
       footer={null}
     >

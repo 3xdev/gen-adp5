@@ -48,7 +48,7 @@ const CustomRichText = connect((props: any) => {
           'fullscreen',
         ]}
         contentStyle={{ height: 300 }}
-        placeholder="请输入内容"
+        placeholder={props.placeholder}
         value={editor}
         media={{ uploadFn: handleUploadFn }}
         onChange={handleChange}

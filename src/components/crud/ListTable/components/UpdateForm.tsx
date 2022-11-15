@@ -37,6 +37,7 @@ import {
 import { Card, Slider, Rate } from 'antd';
 import CustomImageUpload from '@/components/Formily/CustomImageUpload';
 import CustomAttachmentUpload from '@/components/Formily/CustomAttachmentUpload';
+import CustomRelationPickup from '@/components/Formily/CustomRelationPickup';
 import CustomRichText from '@/components/Formily/CustomRichText';
 import { getSuggest } from '@/services/ant-design-pro/api';
 
@@ -124,6 +125,7 @@ const SchemaField = createSchemaField({
     Rate,
     CustomImageUpload,
     CustomAttachmentUpload,
+    CustomRelationPickup,
     CustomRichText,
   },
 });
@@ -151,7 +153,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       destroyOnClose
       title={values ? '编辑' : '添加'}
       width={800}
-      visible={updateModalVisible}
+      open={updateModalVisible}
       onCancel={() => onCancel()}
       footer={null}
     >
