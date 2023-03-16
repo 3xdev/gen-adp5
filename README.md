@@ -88,6 +88,21 @@ yarn lint:fix
     }
   }
 
+  // 自定义模型关联拾取 单选模式
+  {
+      "placeholder": "选取资源",
+      "modalWidth": 680,
+      "labelCol": "title",
+      "valueCol": "eventkey",
+      "visibleColumns": [
+          "id",
+          "type",
+          "title",
+          "eventkey",
+          "status"
+      ]
+  }
+
   // 自定义模型关联拾取 多选模式
   {
     "placeholder": "选取商品",
@@ -105,16 +120,51 @@ yarn lint:fix
 - 设置 列 编辑扩展（容器属性）  
   [Formily Ant Design](https://antd.formilyjs.org/zh-CN/components)
 - 设置 列 编辑扩展（联动）  
-  [Schema 联动协议](https://react.formilyjs.org/zh-CN/api/shared/schema#schemareactions)
+   [Schema 联动协议](https://react.formilyjs.org/zh-CN/api/shared/schema#schemareactions)
+
+  ```json
+  // 主动联动
+  [
+    {
+        "target": "*(effstime,effetime)",
+        "fulfill": {
+            "state": {
+                "visible": "{{$self.value == 0}}"
+            }
+        }
+    },
+    {
+        "target": "effdays",
+        "fulfill": {
+            "state": {
+                "visible": "{{$self.value != 0}}"
+            }
+        }
+    }
+  ]
+
+  // 被动联动
+  {
+    "dependencies": ["type"],
+    "fulfill": {
+      "schema": {
+        "x-visible": "{{$deps[0] === 'text'}}"
+      }
+    }
+  }
+  ```
+
 - 设置 列 编辑扩展（验证）  
   [字段校验器](https://core.formilyjs.org/zh-CN/api/models/field#fieldvalidator)
 
 #### 操作
 
 - 添加 操作 类型 表单弹窗  
-  操作名：表单处理对应控制器代码中的方法名 表单/页面：关联表单代码
+  操作名：表单处理对应控制器代码中的方法名 表单/页面：关联表单代码（示例：postSend(操作名) card_send(表单代码)）
 - 添加 操作 类型 跳转页面  
   表单/页面：前端路由地址（示例：/user/{{user_id}}）
+- 添加 操作 类型 接口请求  
+  操作名：对应控制器代码中的方法名 表单/页面：前端路由地址（示例：/user/{{user_id}}）
 
 ## 开发
 

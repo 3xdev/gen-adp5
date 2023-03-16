@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
 import { Modal } from 'antd';
-import { createForm } from '@formily/core';
+import type { IFieldState } from '@formily/core';
+import { createForm, onFieldInit, onFieldReact } from '@formily/core';
 import { createSchemaField } from '@formily/react';
+import { action, observable } from '@formily/reactive';
 import {
   Form,
   FormItem,
@@ -35,8 +37,9 @@ import {
 import { Card, Slider, Rate } from 'antd';
 import CustomImageUpload from '@/components/Formily/CustomImageUpload';
 import CustomAttachmentUpload from '@/components/Formily/CustomAttachmentUpload';
-
+import CustomRelationPickup from '@/components/Formily/CustomRelationPickup';
 import CustomRichText from '@/components/Formily/CustomRichText';
+import { getSuggest } from '@/services/ant-design-pro/api';
 
 const Text: React.FC<{
   content?: string;
@@ -44,6 +47,48 @@ const Text: React.FC<{
 }> = ({ mode, content, ...props }) => {
   const tagName = mode === 'normal' || !mode ? 'div' : mode;
   return React.createElement(tagName, props, content);
+};
+
+const fetchSuggestData = async (table: string, keyword: string, query: Record<string, any>) => {
+  if (!keyword) {
+    return [];
+  }
+  return new Promise((resolve) => {
+    getSuggest(table, keyword, query).then((res) => {
+      resolve(res.data);
+    });
+  });
+};
+
+const useSuggestDataSource = (
+  name: string,
+  table: string,
+  query: Record<string, any>,
+  service: (
+    table: string,
+    keyword: string,
+    query: Record<string, any>,
+  ) => Promise<{ label: string; value: any }[]>,
+) => {
+  const keyword = observable.ref('');
+
+  onFieldInit(name, (field) => {
+    field.setComponentProps({
+      onSearch: (value: string) => {
+        keyword.value = value;
+      },
+    });
+  });
+
+  onFieldReact(name, (field: IFieldState) => {
+    field.loading = true;
+    service(table, keyword.value || field.value, query).then(
+      action.bound!((data) => {
+        field.dataSource = data;
+        field.loading = false;
+      }),
+    );
+  });
 };
 
 const SchemaField = createSchemaField({
@@ -80,6 +125,7 @@ const SchemaField = createSchemaField({
     Rate,
     CustomImageUpload,
     CustomAttachmentUpload,
+    CustomRelationPickup,
     CustomRichText,
   },
 });
@@ -113,7 +159,7 @@ const ModalForm: React.FC<ModalFormProps> = (props) => {
       footer={null}
     >
       <Form form={form} labelCol={6} wrapperCol={16}>
-        <SchemaField schema={schema} />
+        <SchemaField schema={schema} scope={{ useSuggestDataSource, fetchSuggestData }} />
         <FormButtonGroup.FormItem>
           <Reset>重置</Reset>
           <Submit onSubmit={onSubmit}>提交</Submit>
