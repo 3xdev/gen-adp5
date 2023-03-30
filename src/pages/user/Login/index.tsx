@@ -71,7 +71,6 @@ const Login = () => {
         >
           <Tabs activeKey={type} onChange={setType}>
             <Tabs.TabPane key="password" tab={'账户密码登录'} />
-            <Tabs.TabPane key="mobile" tab={'手机号登录'} />
           </Tabs>
 
           {type === 'password' && errorMsg && <LoginMessage content={errorMsg} />}
@@ -157,7 +156,7 @@ const Login = () => {
                     phone,
                   });
 
-                  if (result === false) {
+                  if (result) {
                     return;
                   }
 

@@ -512,7 +512,7 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表单/页面' }}
+                  x-component-props={{ title: '表单/表格/页面' }}
                 >
                   <SchemaField.String name="target" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
@@ -593,7 +593,7 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表单/页面' }}
+                  x-component-props={{ title: '表单/表格/页面' }}
                 >
                   <SchemaField.String name="target" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>
@@ -674,7 +674,7 @@ const ColForm: React.FC = () => {
                 </SchemaField.Void>
                 <SchemaField.Void
                   x-component="ArrayTable.Column"
-                  x-component-props={{ title: '表单/页面' }}
+                  x-component-props={{ title: '表单/表格/页面' }}
                 >
                   <SchemaField.String name="target" x-decorator="FormItem" x-component="Input" />
                 </SchemaField.Void>

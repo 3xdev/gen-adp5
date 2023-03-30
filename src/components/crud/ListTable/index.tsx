@@ -10,6 +10,7 @@ import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import UpdateForm from './components/UpdateForm';
 import ModalForm from './components/ModalForm';
+import ModalTable from './components/ModalTable';
 import type { Props, TableSchema, TableOption, TableItem } from './data.d';
 import { getProTableSchema, getFormilySchema, getSuggest } from '@/services/ant-design-pro/api';
 import { getList, exportList, getItem, updateItem, addItem, removeItem, restItem } from './service';
@@ -83,10 +84,12 @@ const ListTable: React.FC<Props> = (props) => {
   const [formSchema, setFormSchema] = useState([{}]);
   const [formilyJson, setFormilyJson] = useState({});
   const [formilyValues, setFormilyValues] = useState<TableItem>();
+  const [tableQuery, setTableQuery] = useState<TableItem>();
 
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [showUpdateForm, setShowUpdateForm] = useState<boolean>(false);
   const [showModalForm, setShowModalForm] = useState<boolean>(false);
+  const [showModalTable, setShowModalTable] = useState<boolean>(false);
 
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<TableItem>();
@@ -109,7 +112,7 @@ const ListTable: React.FC<Props> = (props) => {
       case 'edit':
         _handle = async () => {
           getItem(props.table, record[schema.rowKey]).then((res) => {
-            setFormilyValues(res);
+            setFormilyValues({ ...props.query, ...res, ...option.body });
             setShowUpdateForm(true);
           });
         };
@@ -124,25 +127,34 @@ const ListTable: React.FC<Props> = (props) => {
       case 'modal':
         _handle = async () => {
           getItem(props.table, record[schema.rowKey]).then((res) => {
-            setFormilyValues({ ...res, ...props.query });
+            setFormilyValues({ ...props.query, ...res, ...option.body });
             setShowModalForm(true);
             setTableOption(option);
           });
         };
         break;
+      case 'table':
+        _handle = async () => {
+          console.log('-------');
+          console.log(props, { ...props.query, id: record[schema.rowKey] });
+          setTableQuery({ ...props.query, [option.body.query ?? 'id']: record[schema.rowKey] });
+          setTableOption(option);
+          setShowModalTable(true);
+        };
+        break;
       case 'page':
         _handle = () => {
-          history.push(Mustache.render(option.target, { ...record, ids: record[schema.rowKey] }));
+          history.push(
+            Mustache.render(option.target, { ...props.query, ...record, ...option.body }),
+          );
         };
         break;
       case 'request':
         _handle = async () => {
-          await restItem(
-            option.request.method,
-            option.request.url,
-            record[schema.rowKey],
-            option.body,
-          );
+          await restItem(option.request.method, option.request.url, record[schema.rowKey], {
+            ...props.query,
+            ...option.body,
+          });
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -165,7 +177,7 @@ const ListTable: React.FC<Props> = (props) => {
     switch (option.type) {
       case 'add':
         _handle = () => {
-          setFormilyValues(props.query);
+          setFormilyValues({ ...props.query, ...option.body });
           setShowUpdateForm(true);
         };
         _icon = <PlusOutlined />;
@@ -180,19 +192,22 @@ const ListTable: React.FC<Props> = (props) => {
         break;
       case 'modal':
         _handle = () => {
-          setFormilyValues({ ids: '0', ...props.query });
+          setFormilyValues({ ids: '0', ...props.query, ...option.body });
           setShowModalForm(true);
           setTableOption(option);
         };
         break;
       case 'page':
         _handle = () => {
-          history.push(Mustache.render(option.target, {}));
+          history.push(Mustache.render(option.target, { ...props.query, ...option.body }));
         };
         break;
       case 'request':
         _handle = async () => {
-          await restItem(option.request.method, option.request.url, '0', option?.body);
+          await restItem(option.request.method, option.request.url, '0', {
+            ...props.query,
+            ...option.body,
+          });
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -233,12 +248,10 @@ const ListTable: React.FC<Props> = (props) => {
         break;
       case 'request':
         _handle = async () => {
-          await restItem(
-            option.request.method,
-            option.request.url,
-            selectedRowKeys.join(','),
-            option.body,
-          );
+          await restItem(option.request.method, option.request.url, selectedRowKeys.join(','), {
+            ...props.query,
+            ...option.body,
+          });
           actionRef.current?.reloadAndRest?.();
         };
         break;
@@ -403,7 +416,7 @@ const ListTable: React.FC<Props> = (props) => {
       setSchema(res);
       // 读取操作表单
       forms.forEach((option: any) => {
-        if (option?.type == 'modal') {
+        if (option.type == 'modal') {
           getFormilySchema('form', option.target).then((sres) => {
             formSchema[option.target] = sres;
             setFormSchema(formSchema);
@@ -513,6 +526,17 @@ const ListTable: React.FC<Props> = (props) => {
         title={tableOption.title}
         schema={formSchema[tableOption.target]}
         values={formilyValues}
+      />
+
+      <ModalTable
+        onCancel={() => {
+          setShowModalTable(false);
+        }}
+        updateModalVisible={showModalTable}
+        title={tableOption.title}
+        table={tableOption.target}
+        query={tableQuery}
+        tableProps={tableOption.body}
       />
 
       <Drawer

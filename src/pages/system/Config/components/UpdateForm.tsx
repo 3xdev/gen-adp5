@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Modal } from 'antd';
-import { createForm, onFieldReact } from '@formily/core';
+import { createForm } from '@formily/core';
 import { createSchemaField } from '@formily/react';
 import {
   Form,
@@ -33,7 +33,7 @@ import {
   FormButtonGroup,
 } from '@formily/antd';
 import { Card, Slider, Rate } from 'antd';
-import { allDicts, getDicts } from '@/services/ant-design-pro/api';
+import { allTables, allDicts, getDicts } from '@/services/ant-design-pro/api';
 
 const Text: React.FC<{
   content?: string;
@@ -92,6 +92,12 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       createForm({
         initialValues: values,
         effects() {
+          const rels: any = [
+            { value: 'dict', label: '字典', children: [] },
+            { value: 'table', label: '表格', children: [] },
+            { value: 'suggest', label: '搜索', children: [] },
+          ];
+
           getDicts('config_tab').then((res) => {
             form.setFieldState('tab', { dataSource: res.items });
           });
@@ -101,19 +107,16 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           });
 
           allDicts().then((res) => {
-            const items: any = [];
             res.data.forEach((item: any) => {
-              items.push({ value: item.key_, label: item.label });
+              rels[0].children.push({ value: item.key_, label: item.label });
             });
-            form.setFieldState('dict_key', { dataSource: items });
-          });
-
-          onFieldReact('dict_key', (field) => {
-            field.display = ['select', 'radio', 'checkbox'].includes(
-              field.query('component').value(),
-            )
-              ? 'visible'
-              : 'none';
+            allTables().then((tres) => {
+              tres.data.forEach((item: any) => {
+                rels[1].children.push({ value: item.code, label: item.name });
+                rels[2].children.push({ value: item.code, label: item.name });
+              });
+              form.setFieldState('value_enum_rel', { dataSource: rels });
+            });
           });
         },
       }),
@@ -159,21 +162,38 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
             x-component="Input"
             required
           />
-          <SchemaField.String
-            name="description"
-            title="描述说明"
-            x-decorator="FormItem"
-            x-component="Input"
-          />
+          <SchemaField.String name="tip" title="提示" x-decorator="FormItem" x-component="Input" />
           <SchemaField.Markup
-            name="dict_key"
-            title="数据字典"
+            name="value_enum_rel"
+            title="关联"
             x-decorator="FormItem"
-            x-component="Select"
+            x-component="Cascader"
           />
           <SchemaField.String
-            name="extend"
-            title="扩展属性"
+            name="component_props"
+            title="组件属性"
+            default="{}"
+            x-decorator="FormItem"
+            x-component="Input.TextArea"
+          />
+          <SchemaField.String
+            name="decorator_props"
+            title="容器属性"
+            default="{}"
+            x-decorator="FormItem"
+            x-component="Input.TextArea"
+          />
+          <SchemaField.String
+            name="reactions"
+            title="联动"
+            default="{}"
+            x-decorator="FormItem"
+            x-component="Input.TextArea"
+          />
+          <SchemaField.String
+            name="validator"
+            title="验证"
+            default="{}"
             x-decorator="FormItem"
             x-component="Input.TextArea"
           />

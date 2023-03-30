@@ -123,3 +123,10 @@ export async function uploadImages(file: any) {
     data: formData,
   });
 }
+
+export async function requestFetch(method: string, url: string, params: Record<string, any>) {
+  return request(url, {
+    method: method,
+    data: params,
+  });
+}

@@ -38,6 +38,7 @@ import { Card, Slider, Rate } from 'antd';
 import CustomImageUpload from '@/components/Formily/CustomImageUpload';
 import CustomAttachmentUpload from '@/components/Formily/CustomAttachmentUpload';
 import CustomRelationPickup from '@/components/Formily/CustomRelationPickup';
+import CustomRequestFetch from '@/components/Formily/CustomRequestFetch';
 import CustomRichText from '@/components/Formily/CustomRichText';
 import { getSuggest } from '@/services/ant-design-pro/api';
 
@@ -126,12 +127,13 @@ const SchemaField = createSchemaField({
     CustomImageUpload,
     CustomAttachmentUpload,
     CustomRelationPickup,
+    CustomRequestFetch,
     CustomRichText,
   },
 });
 
 export interface UpdateFormProps {
-  onCancel: (flag?: boolean) => void;
+  onCancel: () => void;
   onSubmit: (values: any) => void;
   updateModalVisible: boolean;
   schema: any;

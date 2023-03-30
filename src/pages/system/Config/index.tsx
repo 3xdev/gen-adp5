@@ -137,8 +137,8 @@ const ConfigTable: React.FC = () => {
       filters: true,
     },
     {
-      title: '描述说明',
-      dataIndex: 'description',
+      title: '提示',
+      dataIndex: 'tip',
     },
     {
       title: '创建时间',
